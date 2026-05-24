@@ -1,0 +1,269 @@
+/* Design Tokens & Custom Variables */
+:root {
+    --bg-main: #010204;         /* Extremely dark black-blue */
+    --border-color: rgba(255, 255, 255, 0.05);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    
+    /* Typography colors */
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;   /* Cool gray-blue */
+    --text-muted: #475569;
+    --accent: #60a5fa;          /* Sleek soft blue */
+    
+    /* Fonts */
+    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    /* Transitions */
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* Page Wrapper with Very Subtle Dot Pattern Background */
+body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 24px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+.page-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem; /* Margins around the glass card so it never touches the edges */
+}
+
+/* Main Profile Container (No border or background panel) */
+.profile-container {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 2rem 0;
+}
+
+/* Profile Section (Vertically & Horizontally centered inside this area) */
+.profile-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 140px; /* Gives some vertical volume */
+    margin: 1rem 0;
+}
+
+.profile-name {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.profile-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    animation: fadeIn 1s ease-out;
+}
+
+.at-symbol {
+    color: var(--accent);
+    margin: 0 0.15rem;
+}
+
+/* Profile Link / Github Redirect Link Styling */
+.profile-links {
+    margin-top: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.github-redirect-link {
+    color: #2563eb; /* Dark blue text */
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: var(--transition-smooth);
+    border-bottom: 1px dashed rgba(37, 99, 235, 0.4);
+    padding-bottom: 2px;
+}
+
+.github-redirect-link:hover {
+    color: #60a5fa; /* Glows to a lighter blue on hover */
+    border-bottom-color: #60a5fa;
+}
+
+.redirect-arrow {
+    width: 12px;
+    height: 12px;
+    transition: var(--transition-smooth);
+}
+
+.github-redirect-link:hover .redirect-arrow {
+    transform: translate(2px, -2px);
+}
+
+/* Divider Line */
+.divider {
+    height: 1px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+    width: 100%;
+}
+
+/* Quick Access / Projects Section */
+.quick-access {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+}
+
+.links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Card Link Design */
+.access-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.15rem 1.5rem;
+    background-color: rgba(255, 255, 255, 0.015);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.access-card:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.card-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: var(--transition-smooth);
+}
+
+.access-card:hover .card-title {
+    color: var(--accent);
+}
+
+.card-description {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.card-arrow {
+    color: var(--text-muted);
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.access-card:hover .card-arrow {
+    color: var(--accent);
+    transform: translate(2px, -2px);
+}
+
+/* Simple Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .page-container {
+        padding: 1.25rem 0.75rem;
+    }
+    
+    .profile-container {
+        gap: 2rem;
+        padding: 1rem 0;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+    }
+    
+    .profile-title {
+        font-size: 0.8rem;
+    }
+    
+    .access-card {
+        padding: 1rem 1.15rem;
+    }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herculano Esteves</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Inline SVG Favicon: Italic Black P -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2275%%22 font-size=%2280%22 font-family=%22serif%22 font-style=%22italic%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22black%22>P</text></svg>">
+    <!-- Icon library (Lucide Icons via CDN) for clean graphics -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Main profile container (no border/background window) -->
+        <main class="profile-container">
+            <!-- Profile Section (centered vertically & horizontally) -->
+            <section class="profile-hero">
+                <h1 class="profile-name">Herculano Esteves</h1>
+                <p class="profile-title">
+                    software engineering <span class="at-symbol">@</span> university of minho
+                </p>
+                <div class="profile-links">
+                    <a href="https://github.com/Herculano-Esteves" target="_blank" rel="noopener noreferrer" class="github-redirect-link">
+                        github <i data-lucide="arrow-up-right" class="redirect-arrow"></i>
+                    </a>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- Quick Access / Projects Section -->
+            <section class="quick-access">
+                <h2 class="section-title">
+                    <i data-lucide="compass" class="section-icon"></i> Quick Access
+                </h2>
+                <div class="links-list">
+                    <a href="https://herculano-esteves.github.io/examPreparation/" class="access-card">
+                        <div class="card-info">
+                            <span class="card-title">Exam Preparation</span>
+                            <span class="card-description">Plataforma de preparação para exames de engenharia de software</span>
+                        </div>
+                        <div class="card-arrow">
+                            <i data-lucide="arrow-up-right"></i>
+                        </div>
+                    </a>
+                    <!-- Future links can be added here easily -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Initialize Lucide icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
