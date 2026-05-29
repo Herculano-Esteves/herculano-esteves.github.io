@@ -6,23 +6,21 @@
  * that knows about all modules — every other module depends on ≤ 2 others.
  */
 
-import { CONFIG, THEME }                              from './config.js';
-import { PAGES }                                       from './pages.js';
-import { initRenderer, buildDOM, getGridDimensions }  from './renderer.js';
-import { initTransitions, triggerTransition }          from './transitions.js';
-import { initCursorOverlay }                          from './cursor.js';
-import { clearSelection }                             from './selection.js';
-import { initInput }                                  from './input.js';
+import { CONFIG, THEME } from './config.js';
+import { PAGES } from './pages.js';
+import { initRenderer, buildDOM, getGridDimensions } from './renderer.js';
+import { initTransitions, triggerTransition } from './transitions.js';
+import { initCursorOverlay } from './cursor.js';
+import { clearSelection } from './selection.js';
+import { initInput } from './input.js';
 
 // ── DOM references (these divs never change) ──────────────────────────────────
 
-const scene   = document.getElementById('scene');
-const hud     = document.getElementById('hud');
+const scene = document.getElementById('scene');
 
 // ── App state ─────────────────────────────────────────────────────────────────
 
-let cur  = 0;
-let dots = [];
+let cur = 0;
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
@@ -45,8 +43,8 @@ function init() {
 
     const CHAR_W = Math.round(rect.width);
     const CHAR_H = Math.round(rect.height);
-    const COLS   = Math.floor(window.innerWidth  / CHAR_W);
-    const ROWS   = Math.floor(window.innerHeight / CHAR_H);
+    const COLS = Math.floor(window.innerWidth / CHAR_W);
+    const ROWS = Math.floor(window.innerHeight / CHAR_H);
 
     // ── Initialise renderer ────────────────────────────────────────────────
     initRenderer(COLS, ROWS, CHAR_W, CHAR_H);
@@ -56,7 +54,7 @@ function init() {
     const pageButtons = [];
     const grids = PAGES.map((page, idx) => {
         const buttons = [];
-        const grid    = page.build(COLS, ROWS, buttons);
+        const grid = page.build(COLS, ROWS, buttons);
         pageButtons[idx] = buttons;
         return grid;
     });
@@ -81,18 +79,10 @@ function init() {
     initCursorOverlay(CHAR_W, CHAR_H);
     initTransitions(grids, PAGES.length, clearSelection);
 
-    // ── HUD ────────────────────────────────────────────────────────────────
-    dots = PAGES.map((_, idx) => {
-        const d = document.createElement('div');
-        d.id        = 'dot-' + idx;
-        d.className = 'dot' + (idx === cur ? ' active' : '');
-        d.setAttribute('aria-label', 'Page ' + (idx + 1));
-        d.addEventListener('click', () => goTo(idx));
-        hud.appendChild(d);
-        return d;
+    // ── Navigation Event Listener ──────────────────────────────────────────
+    window.addEventListener('nav-to-page', e => {
+        goTo(e.detail.page);
     });
-
-    updateHUD(cur);
 
     // ── Input ──────────────────────────────────────────────────────────────
     initInput(scene, pageButtons, grids, () => cur, goTo, PAGES.length);
@@ -103,10 +93,5 @@ function init() {
 function goTo(target) {
     if (target === cur || target < 0 || target >= PAGES.length) return;
     cur = target;
-    updateHUD(target);
     triggerTransition(target);
-}
-
-function updateHUD(page) {
-    dots.forEach((d, i) => d.classList.toggle('active', i === page));
 }

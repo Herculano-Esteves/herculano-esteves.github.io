@@ -18,21 +18,21 @@ import {
 
 function drawNavbar(g, cols, buttons, activeIdx) {
     const pages = ['HOME', 'ABOUT', 'PROJECTS', 'CONTACT'];
-    
+
     // [ HOME ]   [ ABOUT ]   [ PROJECTS ]   [ CONTACT ]
     const formatted = pages.map(p => `[ ${p} ]`);
     const totalW = formatted.join('   ').length;
-    
+
     let startCol = centerTextCol(' '.repeat(totalW), cols);
     const row = 1;
-    
+
     pages.forEach((name, idx) => {
         const btnText = `[ ${name} ]`;
         const isActive = (idx === activeIdx);
-        
+
         // Render '[ '
         renderText(g, '[ ', startCol, row, THEME.dim);
-        
+
         // Render the name (with invert if active)
         const nameCol = startCol + 2;
         for (let i = 0; i < name.length; i++) {
@@ -45,10 +45,10 @@ function drawNavbar(g, cols, buttons, activeIdx) {
                 };
             }
         }
-        
+
         // Render ' ]'
         renderText(g, ' ]', nameCol + name.length, row, THEME.dim);
-        
+
         // Register button
         buttons.push({
             col: startCol,
@@ -56,10 +56,10 @@ function drawNavbar(g, cols, buttons, activeIdx) {
             w: btnText.length,
             h: 1,
             action: () => {
-                document.getElementById('dot-' + idx)?.click();
+                window.dispatchEvent(new CustomEvent('nav-to-page', { detail: { page: idx } }));
             }
         });
-        
+
         // Advance startCol
         startCol += btnText.length + 3;
     });
