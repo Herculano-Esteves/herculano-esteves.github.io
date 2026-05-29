@@ -1,1 +1,134 @@
-/* styles are in index.html */
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    cursor: none;
+    /* native cursor hidden — inverted character cell acts as cursor */
+}
+
+/* ── Scene: horizontal row of character-column panels ── */
+#scene {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    overflow: hidden;
+}
+
+/* ── Panel wrapper: one character wide, clips card ── */
+.panel {
+    flex: none;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ── Rotating card inside each panel ── */
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* ── Front and back faces ── */
+.face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.face.back {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+}
+
+/*
+ * .col-face — a <pre> that fills the face.
+ * Each line = one character in the column.
+ * font-size and background set inline from CONFIG / THEME.
+ */
+.col-face {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    line-height: 1;
+    white-space: pre;
+    overflow: hidden;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    user-select: none;
+    /* prevents vertical DOM-order text selection */
+}
+
+/* ── Navigation dots ── */
+#hud {
+    position: fixed;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.6rem;
+    z-index: 200;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dot:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.dot.active {
+    background: var(--accent, #39ff14);
+    border-color: var(--accent, #39ff14);
+    box-shadow: 0 0 8px var(--accent, #39ff14);
+}
+
+/* ── Page counter ── */
+#counter {
+    position: fixed;
+    top: 1.5rem;
+    right: 2rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--accent, #39ff14);
+    opacity: 0.5;
+    z-index: 200;
+}
+
+
+
+/* ── Hint ── */
+#hint {
+    position: fixed;
+    bottom: 2.5rem;
+    right: 2rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.2);
+    z-index: 200;
+}
