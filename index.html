@@ -1,263 +1,851 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apollonian Gasket — Step 1</title>
+    <title>Herculano Esteves</title>
+    <meta name="description" content="Herculano Esteves — Software Engineering">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        * {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html,
         body {
-            background: #010204;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            height: 100vh;
+            background: #000;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            cursor: none;   /* native cursor hidden — inverted character cell acts as cursor */
         }
 
-        canvas {
-            display: block;
-        }
-
-        #info {
+        /* ── Scene: horizontal row of character-column panels ── */
+        #scene {
             position: fixed;
-            bottom: 1rem;
+            inset: 0;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ── Panel wrapper: one character wide, clips card ── */
+        .panel {
+            flex: none;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Rotating card inside each panel ── */
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* ── Front and back faces ── */
+        .face {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .face.back {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+        }
+
+        /*
+         * .col-face — a <pre> that fills the face.
+         * Each line = one character in the column.
+         * font-size and background set inline from CONFIG / THEME.
+         */
+        .col-face {
+            position: absolute;
+            inset: 0;
+            padding: 0;
+            line-height: 1;
+            white-space: pre;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            user-select: none;  /* prevents vertical DOM-order text selection */
+        }
+
+        /* ── Navigation dots ── */
+        #hud {
+            position: fixed;
+            bottom: 2.5rem;
             left: 50%;
             transform: translateX(-50%);
-            color: #475569;
-            font: 0.7rem/1 monospace;
-            text-align: center;
+            display: flex;
+            gap: 0.6rem;
+            z-index: 200;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 0;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dot:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dot.active {
+            background: var(--accent, #39ff14);
+            border-color: var(--accent, #39ff14);
+            box-shadow: 0 0 8px var(--accent, #39ff14);
+        }
+
+        /* ── Page counter ── */
+        #counter {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: var(--accent, #39ff14);
+            opacity: 0.5;
+            z-index: 200;
+        }
+
+        /* ── Hint ── */
+        #hint {
+            position: fixed;
+            bottom: 2.5rem;
+            right: 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.2);
+            z-index: 200;
         }
     </style>
 </head>
 
 <body>
-    <canvas id="c"></canvas>
-    <div id="info">–</div>
+
+    <div id="scene"></div>
+    <div id="hud"></div>
+    <div id="counter">01 / 04</div>
+    <div id="hint">scroll / ↑↓</div>
+
     <script>
         'use strict';
 
-        // ── Complex arithmetic ──────────────────────────────────────────────────────
-        const C = {
-            add: (a, b) => ({ re: a.re + b.re, im: a.im + b.im }),
-            sub: (a, b) => ({ re: a.re - b.re, im: a.im - b.im }),
-            mul: (a, b) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re }),
-            scale: (a, s) => ({ re: a.re * s, im: a.im * s }),
-            // Principal square root (positive real part)
-            sqrt: (a) => {
-                const mod = Math.sqrt(a.re * a.re + a.im * a.im);
-                const r = Math.sqrt(mod);
-                const θ = Math.atan2(a.im, a.re) / 2;
-                return { re: r * Math.cos(θ), im: r * Math.sin(θ) };
-            }
+        /* ═══════════════════════════════════════════════════════════════════
+           ❶  CONFIG  ← edit here
+           ═══════════════════════════════════════════════════════════════════ */
+        const CONFIG = {
+            // Font & Grid
+            charSize: 14,    // Font size in px — determines column count automatically
+
+            // Big ASCII-art text scaling
+            bigTextScale: 1,     // Dots per bitmap pixel (1 = tiny, 2 = readable, 3 = bold)
+
+            // Wave Transition
+            durationMs: 30,   // Flip duration per panel (ms) — keep fast for split-flap feel
+            overlapLimit: 3,     // Simultaneous wave steps — higher = faster sweep
+            spins: 0,     // Extra full 360° spins per flip (0 = plain half-flip)
+            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+
+            // Input
+            scrollDebounceMs: 40,    // ms — prevents accidental double-page jumps
+
+            // Cursor
+            cursorBlinkMs: 530,      // ms per blink half-cycle (530 = standard terminal blink)
         };
 
-        // ── Expected tangency distance between new circle (radius r4) and existing ci ──
-        // External tangency: dist = r4 + ri
-        // New circle is inside the outer enclosing circle (ki < 0): dist = |ri| - r4
-        function tDist(r4, ki) {
-            return ki < 0 ? (-1 / ki) - r4 : (1 / ki) + r4;
-        }
+        /* ═══════════════════════════════════════════════════════════════════
+           ❶B  THEME  ← change colours and style here
+           ═══════════════════════════════════════════════════════════════════ */
+        const THEME = {
+            bg: '#000000',   // Page background (all panels)
+            primary: '#39ff14',   // Neon phosphor green — main text & big ASCII art
+            dim: '#1a5c00',   // Dimmed green — secondary / body text
+            muted: '#0a2e00',   // Very dim green — noise / decorative fill (unused by default)
+        };
 
-        // ── Validate a Soddy candidate against three reference circles ──────────────
-        function isValidSoddy(cand, c1, c2, c3) {
-            if (!isFinite(cand.x) || !isFinite(cand.y) || !isFinite(cand.k)) return false;
-            if (cand.k <= 0) return false;                  // only positive curvature (inner circles)
-            const r4 = 1 / cand.k;
+        /* ═══════════════════════════════════════════════════════════════════
+           ❷  BITMAP FONT  — 5 × 7 uppercase letters + digits
+              Each glyph is an array of 7 rows × 5 columns (1 = filled, 0 = empty).
+           ═══════════════════════════════════════════════════════════════════ */
+        const GLYPH = {
+            'A': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1]],
+            'B': [[1, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 0]],
+            'C': [[0, 1, 1, 1, 1], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 1, 1, 1]],
+            'D': [[1, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 0]],
+            'E': [[1, 1, 1, 1, 1], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 1]],
+            'F': [[1, 1, 1, 1, 1], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0]],
+            'G': [[0, 1, 1, 1, 1], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 1, 1, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 1]],
+            'H': [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1]],
+            'I': [[1, 1, 1, 1, 1], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [1, 1, 1, 1, 1]],
+            'J': [[0, 0, 1, 1, 1], [0, 0, 0, 1, 0], [0, 0, 0, 1, 0], [0, 0, 0, 1, 0], [0, 0, 0, 1, 0], [1, 0, 0, 1, 0], [0, 1, 1, 0, 0]],
+            'K': [[1, 0, 0, 0, 1], [1, 0, 0, 1, 0], [1, 0, 1, 0, 0], [1, 1, 0, 0, 0], [1, 0, 1, 0, 0], [1, 0, 0, 1, 0], [1, 0, 0, 0, 1]],
+            'L': [[1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 1]],
+            'M': [[1, 0, 0, 0, 1], [1, 1, 0, 1, 1], [1, 0, 1, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1]],
+            'N': [[1, 0, 0, 0, 1], [1, 1, 0, 0, 1], [1, 0, 1, 0, 1], [1, 0, 0, 1, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1]],
+            'O': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],
+            'P': [[1, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0]],
+            'Q': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 1, 0, 1], [1, 0, 0, 1, 1], [0, 1, 1, 1, 1]],
+            'R': [[1, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 0], [1, 0, 1, 0, 0], [1, 0, 0, 1, 0], [1, 0, 0, 0, 1]],
+            'S': [[0, 1, 1, 1, 1], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 1, 1, 0], [0, 0, 0, 0, 1], [0, 0, 0, 0, 1], [1, 1, 1, 1, 0]],
+            'T': [[1, 1, 1, 1, 1], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0]],
+            'U': [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],
+            'V': [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 0, 1, 0], [0, 1, 0, 1, 0], [0, 0, 1, 0, 0]],
+            'W': [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 1, 0, 1], [1, 1, 0, 1, 1], [1, 1, 0, 1, 1], [1, 0, 0, 0, 1]],
+            'X': [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 0, 1, 0], [0, 0, 1, 0, 0], [0, 1, 0, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1]],
+            'Y': [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 0, 1, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0]],
+            'Z': [[1, 1, 1, 1, 1], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 1]],
+            '0': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 1, 1], [1, 0, 1, 0, 1], [1, 1, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],
+            '1': [[0, 0, 1, 0, 0], [0, 1, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 1, 1, 1, 0]],
+            '2': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [1, 1, 1, 1, 1]],
+            '3': [[1, 1, 1, 1, 1], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],
+            '4': [[0, 0, 0, 1, 0], [0, 0, 1, 1, 0], [0, 1, 0, 1, 0], [1, 0, 0, 1, 0], [1, 1, 1, 1, 1], [0, 0, 0, 1, 0], [0, 0, 0, 1, 0]],
+            '5': [[1, 1, 1, 1, 1], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [0, 0, 0, 0, 1], [0, 0, 0, 0, 1], [1, 1, 1, 1, 0]],
+            '6': [[0, 0, 1, 1, 0], [0, 1, 0, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],
+            '7': [[1, 1, 1, 1, 1], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [0, 1, 0, 0, 0], [0, 1, 0, 0, 0]],
+            '8': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],
+            '9': [[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 1], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [0, 1, 1, 0, 0]],
+            ' ': [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
+        };
 
-            // Must fit inside the outer bounding circle (radius 1, centered at origin)
-            const distFromOrigin = Math.hypot(cand.x, cand.y);
-            if (distFromOrigin + r4 > 1.0 + 1e-5) return false;
+        /* ═══════════════════════════════════════════════════════════════════
+           ❸  GRID HELPERS
+           ═══════════════════════════════════════════════════════════════════ */
 
-            // Must be tangent to all three reference circles within tolerance
-            for (const ci of [c1, c2, c3]) {
-                const expected = tDist(r4, ci.k);
-                if (expected < -1e-6) return false;         // geometrically impossible
-                const actual = Math.hypot(cand.x - ci.x, cand.y - ci.y);
-                const tol = 1e-3 * expected + 1e-7;
-                if (Math.abs(actual - expected) > tol) return false;
-            }
-            return true;
-        }
-
-        // ── Descartes' Circle Theorem with branch-safe validation ──────────────────
-        // For 3 mutually tangent circles, computes the (up to 2) Soddy circles.
-        //
-        // Scalar Descartes:  k4 = k1+k2+k3 ± 2√(k1k2+k2k3+k3k1)
-        // Complex Descartes: z4·k4 = (z1k1+z2k2+z3k3) ± 2√(k1k2·z1z2+k2k3·z2z3+k3k1·z3z1)
-        //
-        // The ± in the center formula is independent of the ± in the curvature formula.
-        // We try all 4 combinations (2 k-values × 2 sqrt branches) and keep only valid ones.
-        function soddyPair(c1, c2, c3) {
-            const { k: k1, x: x1, y: y1 } = c1;
-            const { k: k2, x: x2, y: y2 } = c2;
-            const { k: k3, x: x3, y: y3 } = c3;
-
-            const kS = k1 + k2 + k3;
-            const det = k1 * k2 + k2 * k3 + k3 * k1;
-            if (det < -1e-9) return [];                     // no real Soddy curvature exists
-
-            const sq = Math.sqrt(Math.max(0, det));
-            const k4a = kS + 2 * sq;
-            const k4b = kS - 2 * sq;
-
-            const z1 = { re: x1, im: y1 };
-            const z2 = { re: x2, im: y2 };
-            const z3 = { re: x3, im: y3 };
-
-            // zS = z1k1 + z2k2 + z3k3
-            const zS = C.add(C.add(C.scale(z1, k1), C.scale(z2, k2)), C.scale(z3, k3));
-
-            // inner = k1k2·z1z2 + k2k3·z2z3 + k3k1·z3z1
-            const inner = C.add(
-                C.add(C.scale(C.mul(z1, z2), k1 * k2),
-                    C.scale(C.mul(z2, z3), k2 * k3)),
-                C.scale(C.mul(z3, z1), k3 * k1)
+        // Create a blank grid of { char, color } cells
+        function emptyGrid(cols, rows) {
+            return Array.from({ length: rows }, () =>
+                Array.from({ length: cols }, () => ({ char: ' ', color: THEME.primary }))
             );
+        }
 
-            // Two branches of sqrt(inner): sqP and sqN = -sqP
-            const sqP = C.sqrt(inner);
-            const sqN = { re: -sqP.re, im: -sqP.im };
-
-            // Try all 4 combinations, keep the valid Soddy circles
-            const valid = [];
-            const seen = new Set();
-
-            for (const k4 of [k4a, k4b]) {
-                if (Math.abs(k4) < 1e-10) continue;
-                for (const branch of [sqP, sqN]) {
-                    // z4 = (zS + 2·branch) / k4
-                    const z4 = C.scale(C.add(zS, C.scale(branch, 2)), 1 / k4);
-                    const cand = { k: k4, x: z4.re, y: z4.im };
-
-                    if (!isValidSoddy(cand, c1, c2, c3)) continue;
-
-                    // Deduplicate (different combinations can yield the same circle)
-                    const key = `${Math.round(k4 * 1e4)},${Math.round(z4.re * 1e4)},${Math.round(z4.im * 1e4)}`;
-                    if (!seen.has(key)) { seen.add(key); valid.push(cand); }
-                }
+        // Write a plain string at (startCol, startRow) on the grid
+        function renderText(grid, text, startCol, startRow, color) {
+            const ROWS = grid.length, COLS = grid[0].length;
+            for (let i = 0; i < text.length; i++) {
+                const c = startCol + i;
+                if (c < 0 || c >= COLS || startRow < 0 || startRow >= ROWS) continue;
+                grid[startRow][c] = { char: text[i], color };
             }
-            return valid;
         }
 
-        // ── Gasket generation via BFS ───────────────────────────────────────────────
-        // Starting configuration: 1 outer + 4 inner circles (all mutually tangent in groups of 3).
-        //
-        // Curvature verification via Descartes (k1+k2+k3+k4)² = 2(k1²+k2²+k3²+k4²):
-        //   (cO,cL,cR,cT): (-1+2+2+3)² = 36 = 2(1+4+4+9) = 36 ✓
-        //   (cO,cL,cR,cB): same by symmetry ✓
-        //   (cO,cL,cT): k4 from (-1+2+3)² formula → next level circles
-        //
-        // Tangency distances (verified):
-        //   cO↔cL: |−0.5−0| = 0.5 = |1−0.5| (internal) ✓
-        //   cL↔cR: |−0.5−0.5| = 1 = 0.5+0.5 (external) ✓
-        //   cL↔cT: dist = 5/6 = 0.5+1/3 ✓
-        //   cO↔cT: 2/3 = 1−1/3 (internal) ✓
-        const cO = { k: -1, x: 0, y: 0 };
-        const cL = { k: 2, x: -0.5, y: 0 };
-        const cR = { k: 2, x: 0.5, y: 0 };
-        const cT = { k: 3, x: 0, y: 2 / 3 };
-        const cB = { k: 3, x: 0, y: -2 / 3 };
-
-        const MIN_R = 0.003;   // minimum radius to generate (in unit-circle world space)
-        const MAX_ITER = 80000;
-
-        function circleKey(c) {
-            return `${Math.round(c.k * 1e5)},${Math.round(c.x * 1e5)},${Math.round(c.y * 1e5)}`;
+        // Return the column width (in grid cells) that a big-text string will occupy
+        function bigTextWidth(text, scale) {
+            const GW = 5, KN = 1;          // glyph width, kerning gap (in dots)
+            return (text.length * (GW + KN) - KN) * scale;
         }
 
-        function buildGasket() {
-            const circles = new Map();
-            [cO, cL, cR, cT, cB].forEach(c => circles.set(circleKey(c), c));
+        // Return the centred start column for big text
+        function centerBigCol(text, scale, cols) {
+            return Math.max(0, Math.floor((cols - bigTextWidth(text, scale)) / 2));
+        }
 
-            // All mutually-tangent triples from the 5 base circles
-            const queue = [
-                [cO, cL, cT], [cO, cL, cB],
-                [cO, cR, cT], [cO, cR, cB],
-                [cL, cR, cT], [cL, cR, cB],
-            ];
-            const seenTriples = new Set(queue.map(t => t.map(circleKey).sort().join('|')));
+        // Return the centred start column for a plain string
+        function centerTextCol(text, cols) {
+            return Math.max(0, Math.floor((cols - text.length) / 2));
+        }
 
-            let iter = 0;
-            while (queue.length && iter++ < MAX_ITER) {
-                const [c1, c2, c3] = queue.shift();
-                for (const nc of soddyPair(c1, c2, c3)) {
-                    if (1 / nc.k < MIN_R) continue;
-                    const key = circleKey(nc);
-                    if (circles.has(key)) continue;
-                    circles.set(key, nc);
+        // Write large bitmap text at (startCol, startRow).
+        // scale = CONFIG.bigTextScale (pixels per bitmap dot).
+        // Filled dots → '█', empty dots → leave as-is (space).
+        function renderBigText(grid, text, startCol, startRow, scale, color) {
+            const GW = 5, GH = 7, KN = 1;
+            const ROWS = grid.length, COLS = grid[0].length;
+            let xOff = 0;
+            for (const ch of text.toUpperCase()) {
+                const glyph = GLYPH[ch] ?? GLYPH[' '];
+                for (let gy = 0; gy < GH; gy++) {
+                    for (let gx = 0; gx < GW; gx++) {
+                        if (!glyph[gy][gx]) continue;
+                        for (let sy = 0; sy < scale; sy++) {
+                            for (let sx = 0; sx < scale; sx++) {
+                                const r = startRow + gy * scale + sy;
+                                const c = startCol + xOff + gx * scale + sx;
+                                if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+                                    grid[r][c] = { char: '\u2588', color };
+                                }
+                            }
+                        }
+                    }
+                }
+                xOff += (GW + KN) * scale;
+            }
+        }
 
-                    // Spawn 3 new triples pairing the new circle with each edge of the current triple
-                    for (const [a, b] of [[c1, c2], [c1, c3], [c2, c3]]) {
-                        const tk = [circleKey(a), circleKey(b), key].sort().join('|');
-                        if (!seenTriples.has(tk)) { seenTriples.add(tk); queue.push([a, b, nc]); }
+        /* ═══════════════════════════════════════════════════════════════════
+           ❹  PAGES  ← add / edit your content here
+              Each page has a build(cols, rows) function that returns a grid.
+           ═══════════════════════════════════════════════════════════════════ */
+        const PAGES = [
+            {
+                // Page 1 — Home / name
+                build(cols, rows) {
+                    const g = emptyGrid(cols, rows);
+                    const sc = CONFIG.bigTextScale;
+                    const TH = 7 * sc;   // big-text block height in rows
+
+                    // Vertical center both name lines + labels
+                    const totalH = TH + sc * 2 + TH + 3;
+                    const top = Math.max(0, Math.floor((rows - totalH) / 2));
+
+                    renderBigText(g, 'HERCULANO', centerBigCol('HERCULANO', sc, cols), top, sc, THEME.primary);
+                    renderBigText(g, 'ESTEVES', centerBigCol('ESTEVES', sc, cols), top + TH + sc * 2, sc, THEME.dim);
+
+                    const row2 = top + totalH;
+                    const l1 = '> software_engineer.exe';
+                    const l2 = '@herculano  \xb7  University of Minho';
+                    renderText(g, l1, centerTextCol(l1, cols), row2, THEME.primary);
+                    renderText(g, l2, centerTextCol(l2, cols), row2 + 2, THEME.dim);
+                    return g;
+                }
+            },
+            {
+                // Page 2 — About
+                build(cols, rows) {
+                    const g = emptyGrid(cols, rows);
+                    const sc = CONFIG.bigTextScale;
+                    const TH = 7 * sc;
+
+                    const lines = [
+                        '> whoami',
+                        '',
+                        'Curious, systematic, always building.',
+                        'Passionate about elegant solutions',
+                        'and the beauty of mathematics in code.',
+                    ];
+                    const totalH = TH + 2 + lines.length;
+                    const top = Math.max(0, Math.floor((rows - totalH) / 2));
+
+                    renderBigText(g, 'ABOUT', centerBigCol('ABOUT', sc, cols), top, sc, THEME.primary);
+
+                    lines.forEach((ln, i) => {
+                        const color = i === 0 ? THEME.primary : THEME.dim;
+                        renderText(g, ln, centerTextCol(ln, cols), top + TH + 2 + i, color);
+                    });
+                    return g;
+                }
+            },
+            {
+                // Page 3 — Projects
+                build(cols, rows) {
+                    const g = emptyGrid(cols, rows);
+                    const sc = CONFIG.bigTextScale;
+                    const TH = 7 * sc;
+
+                    const lines = [
+                        '> ls ./projects',
+                        '',
+                        'Fractals & generative art',
+                        'Web systems & tooling',
+                        'Algorithms & data structures',
+                        '-> github.com/Herculano-Esteves',
+                    ];
+                    const totalH = TH + 2 + lines.length;
+                    const top = Math.max(0, Math.floor((rows - totalH) / 2));
+
+                    renderBigText(g, 'PROJECTS', centerBigCol('PROJECTS', sc, cols), top, sc, THEME.primary);
+
+                    lines.forEach((ln, i) => {
+                        const color = i === 0 ? THEME.primary : THEME.dim;
+                        renderText(g, ln, centerTextCol(ln, cols), top + TH + 2 + i, color);
+                    });
+                    return g;
+                }
+            },
+            {
+                // Page 4 — Contact
+                build(cols, rows) {
+                    const g = emptyGrid(cols, rows);
+                    const sc = CONFIG.bigTextScale;
+                    const TH = 7 * sc;
+
+                    const lines = [
+                        '> ping herculano',
+                        '',
+                        'github.com/Herculano-Esteves',
+                        '',
+                        'Open to collaborations',
+                        'and interesting problems.',
+                    ];
+                    const totalH = TH + 2 + lines.length;
+                    const top = Math.max(0, Math.floor((rows - totalH) / 2));
+
+                    renderBigText(g, 'CONTACT', centerBigCol('CONTACT', sc, cols), top, sc, THEME.primary);
+
+                    lines.forEach((ln, i) => {
+                        const color = i === 0 ? THEME.primary : THEME.dim;
+                        renderText(g, ln, centerTextCol(ln, cols), top + TH + 2 + i, color);
+                    });
+                    return g;
+                }
+            },
+        ];
+
+        /* ═══════════════════════════════════════════════════════════════════
+           ❺  INIT — runs after fonts are loaded to get exact char dimensions
+           ═══════════════════════════════════════════════════════════════════ */
+        document.fonts.ready.then(init);
+
+        function init() {
+            // ── Measure exact char cell size with the real loaded font ──────────
+            const probe = document.createElement('span');
+            probe.style.cssText = [
+                'position:absolute', 'top:-9999px', 'left:-9999px',
+                `font-family:\'Share Tech Mono\',monospace`,
+                `font-size:${CONFIG.charSize}px`,
+                'line-height:1', 'white-space:pre', 'visibility:hidden',
+            ].join(';');
+            probe.textContent = 'M';
+            document.body.appendChild(probe);
+            const rect = probe.getBoundingClientRect();
+            document.body.removeChild(probe);
+
+            const CHAR_W = Math.round(rect.width);
+            const CHAR_H = Math.round(rect.height);
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            const COLS = Math.floor(W / CHAR_W);   // number of panels = number of char columns
+            const ROWS = Math.floor(H / CHAR_H);   // rows per panel face
+
+            // ── Pre-compute all page grids (done once, not per-flip) ─────────────
+            const grids = PAGES.map(p => p.build(COLS, ROWS));
+
+            // ── CSS custom properties ────────────────────────────────────────────
+            document.documentElement.style.setProperty('--accent', THEME.primary);
+
+            // ── makeCol: HTML string for column `col` of a grid ─────────────────
+            function makeCol(grid, col) {
+                let html = `<pre class="col-face" style="font-size:${CONFIG.charSize}px;background:${THEME.bg}">`;
+                for (let row = 0; row < ROWS; row++) {
+                    const cell = grid[row]?.[col] ?? { char: ' ', color: THEME.primary };
+                    const ch = cell.char === '&' ? '&amp;'
+                        : cell.char === '<' ? '&lt;'
+                            : cell.char === '>' ? '&gt;'
+                                : cell.char;
+                    html += `<span style="color:${cell.color}">${ch}</span>`;
+                    if (row < ROWS - 1) html += '\n';
+                }
+                return html + '</pre>';
+            }
+
+            // ── DOM Build ────────────────────────────────────────────────────────
+            const scene = document.getElementById('scene');
+            const hud = document.getElementById('hud');
+            const cards = [];
+
+            for (let i = 0; i < COLS; i++) {
+                const panel = document.createElement('div');
+                panel.className = 'panel';
+                panel.style.width = CHAR_W + 'px';
+                panel.style.minWidth = CHAR_W + 'px';
+                panel.style.perspective = '800px';    // perspective on the parent, not the card
+
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const front = document.createElement('div');
+                front.className = 'face front';
+                front.innerHTML = makeCol(grids[0], i);
+
+                const back = document.createElement('div');
+                back.className = 'face back';
+                back.innerHTML = makeCol(grids[1 % PAGES.length], i);
+
+                card._queue = [];
+                card._animating = false;
+                card._currentRot = 0;
+                card._visiblePage = 0;
+
+                card.appendChild(front);
+                card.appendChild(back);
+                panel.appendChild(card);
+                scene.appendChild(panel);
+                cards.push(card);
+            }
+
+            // ── Selection State & Logic ──────────────────────────────────────────
+            let selectStart = null;
+            let selectEnd = null;
+            let isSelecting = false;
+
+            function getVisiblePre(card) {
+                if (!card) return null;
+                const isFront = Math.round(card._currentRot / 180) % 2 === 0;
+                const face = card.querySelector(isFront ? '.face.front' : '.face.back');
+                return face ? face.firstElementChild : null; // <pre>
+            }
+
+            function clearSelection() {
+                if (!selectStart) return;
+                const activePres = cards.map(card => getVisiblePre(card));
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        const span = activePres[c]?.children[r];
+                        if (span) {
+                            span.style.backgroundColor = '';
+                            span.style.color = span._origColor ?? '';
+                            span._selected = false;
+                        }
+                    }
+                }
+                selectStart = null;
+                selectEnd = null;
+                isSelecting = false;
+            }
+
+            function updateSelectionVisuals() {
+                if (!selectStart || !selectEnd) return;
+                const startIdx = selectStart.row * COLS + selectStart.col;
+                const endIdx = selectEnd.row * COLS + selectEnd.col;
+                const minIdx = Math.min(startIdx, endIdx);
+                const maxIdx = Math.max(startIdx, endIdx);
+                const hasSelection = minIdx !== -1 && minIdx !== maxIdx;
+
+                const activePres = cards.map(card => getVisiblePre(card));
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        const idx = r * COLS + c;
+                        const span = activePres[c]?.children[r];
+                        if (!span) continue;
+                        if (span._origColor === undefined) {
+                            span._origColor = span.style.color || '';
+                        }
+                        const isSel = hasSelection && (idx >= minIdx && idx <= maxIdx);
+                        if (isSel) {
+                            span.style.backgroundColor = span._origColor || THEME.primary;
+                            span.style.color = THEME.bg;
+                            span._selected = true;
+                        } else {
+                            span.style.backgroundColor = '';
+                            span.style.color = span._origColor;
+                            span._selected = false;
+                        }
                     }
                 }
             }
-            return [...circles.values()];
-        }
 
-        // ── Render ──────────────────────────────────────────────────────────────────
-        const canvas = document.getElementById('c');
-        const ctx = canvas.getContext('2d');
+            function getSelectionText() {
+                if (!selectStart || !selectEnd) return '';
+                const startIdx = selectStart.row * COLS + selectStart.col;
+                const endIdx = selectEnd.row * COLS + selectEnd.col;
+                const minIdx = Math.min(startIdx, endIdx);
+                const maxIdx = Math.max(startIdx, endIdx);
+                if (minIdx === maxIdx) return '';
 
-        function render() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            const W = canvas.width, H = canvas.height;
+                const rStart = Math.floor(minIdx / COLS);
+                const cStart = minIdx % COLS;
+                const rEnd = Math.floor(maxIdx / COLS);
+                const cEnd = maxIdx % COLS;
 
-            const t0 = performance.now();
-            const circles = buildGasket();
-            const elapsed = (performance.now() - t0).toFixed(0);
+                const lines = [];
+                const grid = grids[cur];
 
-            const scale = Math.min(W, H) * 1.28;
-            const ox = W / 2, oy = H / 2;
-
-            ctx.clearRect(0, 0, W, H);
-
-            // ── Outer bounding circle ──
-            ctx.beginPath();
-            ctx.arc(ox, oy, scale, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(96,165,250,0.3)';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // ── Inner circles: sorted large → small ──
-            const inner = circles.filter(c => c.k > 0).sort((a, b) => a.k - b.k);
-            const maxK = inner.at(-1)?.k ?? 1;
-
-            for (const c of inner) {
-                const r = (1 / c.k) * scale;
-                const sx = ox + c.x * scale;
-                const sy = oy + c.y * scale;
-                if (r < 0.4) continue;
-
-                const t = Math.log(c.k) / Math.log(maxK);   // 0 = largest, 1 = smallest
-                const hue = 200 + t * 150;                     // blue → magenta
-                const lit = Math.round(70 - t * 30);           // 70% → 40% lightness
-                const alf = Math.max(0.04, 0.9 - t * 0.85);
-
-                ctx.beginPath();
-                ctx.arc(sx, sy, r, 0, Math.PI * 2);
-                if (r > 15) {
-                    ctx.fillStyle = `hsla(${hue},60%,${lit}%,0.05)`;
-                    ctx.fill();
+                for (let r = rStart; r <= rEnd; r++) {
+                    const cS = (r === rStart) ? cStart : 0;
+                    const cE = (r === rEnd) ? cEnd : COLS - 1;
+                    
+                    let rowStr = '';
+                    for (let c = cS; c <= cE; c++) {
+                        rowStr += grid[r]?.[c]?.char ?? ' ';
+                    }
+                    if (r < rEnd || cE === COLS - 1) {
+                        rowStr = rowStr.trimEnd();
+                    }
+                    lines.push(rowStr);
                 }
-                ctx.strokeStyle = `hsla(${hue},85%,${lit}%,${alf.toFixed(2)})`;
-                ctx.lineWidth = Math.max(0.3, 2 - t * 1.7);
-                ctx.stroke();
+                return lines.join('\n');
             }
 
-            document.getElementById('info').textContent =
-                `${inner.length} circles  ·  ${elapsed} ms  ·  min r ≈ ${MIN_R}`;
-        }
+            scene.addEventListener('mousedown', e => {
+                if (e.button !== 0) return; // only left click
+                clearSelection();
+                clearCursor();
+                isSelecting = true;
+                const col = Math.max(0, Math.min(COLS - 1, Math.floor(e.clientX / CHAR_W)));
+                const row = Math.max(0, Math.min(ROWS - 1, Math.floor(e.clientY / CHAR_H)));
+                selectStart = { col, row };
+                selectEnd = { col, row };
+            });
 
-        render();
-        window.addEventListener('resize', render);
+            window.addEventListener('mousemove', e => {
+                if (!isSelecting) return;
+                const col = Math.max(0, Math.min(COLS - 1, Math.floor(e.clientX / CHAR_W)));
+                const row = Math.max(0, Math.min(ROWS - 1, Math.floor(e.clientY / CHAR_H)));
+                selectEnd = { col, row };
+                updateSelectionVisuals();
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (isSelecting) {
+                    isSelecting = false;
+                    if (selectStart && selectEnd && selectStart.col === selectEnd.col && selectStart.row === selectEnd.row) {
+                        clearSelection();
+                    }
+                }
+            });
+
+            // ── Mouse cursor invert effect (with blink) ──────────────────────────
+            // Hovered character cell: char color ↔ background — empty cells become
+            // solid filled blocks; characters appear as "selected" terminal cursor.
+            // The cell blinks at CONFIG.cursorBlinkMs so it's never lost on screen.
+            let cursorCol = -1, cursorRow = -1, cursorSpan = null;
+            let blinkTimer = null, blinkOn = true;
+
+            function applyInvert(span) {
+                if (span._selected) return;
+                span.style.backgroundColor = span._origColor;
+                span.style.color = THEME.bg;
+            }
+
+            function clearInvert(span) {
+                if (span._selected) return;
+                span.style.backgroundColor = '';
+                span.style.color = span._origColor ?? '';
+            }
+
+            function clearCursor() {
+                if (blinkTimer) { clearInterval(blinkTimer); blinkTimer = null; }
+                if (cursorSpan) { clearInvert(cursorSpan); cursorSpan = null; }
+                cursorCol = -1; cursorRow = -1;
+            }
+
+            scene.addEventListener('mousemove', e => {
+                if (isSelecting) return; // skip cursor hover logic while dragging selection
+
+                const col = Math.floor(e.clientX / CHAR_W);
+                const row = Math.floor(e.clientY / CHAR_H);
+                if (col === cursorCol && row === cursorRow) return; // same cell — skip
+
+                clearCursor();
+                cursorCol = col;
+                cursorRow = row;
+
+                const card = cards[col];
+                if (!card) return;
+                const pre = getVisiblePre(card);
+                if (!pre) return;
+                const span = pre.children[row]; // O(1) — HTMLCollection indexed access
+                if (!span) return;
+
+                if (span._selected) return;
+
+                // Store original colour and start in ON state
+                if (span._origColor === undefined) {
+                    span._origColor = span.style.color || '';
+                }
+                cursorSpan = span;
+                blinkOn = true;
+                applyInvert(span);
+
+                // Blink: toggle inversion at CONFIG.cursorBlinkMs interval
+                blinkTimer = setInterval(() => {
+                    if (!cursorSpan || cursorSpan._selected) return;
+                    blinkOn = !blinkOn;
+                    blinkOn ? applyInvert(cursorSpan) : clearInvert(cursorSpan);
+                }, CONFIG.cursorBlinkMs);
+            });
+
+            scene.addEventListener('mouseleave', clearCursor);
+
+
+            // ── HUD (navigation dots) ────────────────────────────────────────────
+            let cur = 0;
+
+
+            const dots = PAGES.map((_, idx) => {
+                const d = document.createElement('div');
+                d.id = 'dot-' + idx;
+                d.className = 'dot' + (idx === 0 ? ' active' : '');
+                d.setAttribute('aria-label', 'Page ' + (idx + 1));
+                d.addEventListener('click', () => goTo(idx));
+                hud.appendChild(d);
+                return d;
+            });
+
+            function updateHUD(page) {
+                dots.forEach((d, i) => d.classList.toggle('active', i === page));
+                document.getElementById('counter').textContent =
+                    String(page + 1).padStart(2, '0') + ' / ' +
+                    String(PAGES.length).padStart(2, '0');
+            }
+
+            // ── Flip engine ──────────────────────────────────────────────────────
+
+            /*
+             * triggerTransition  — pushes the target page onto every card's queue
+             * and collapses any pending intermediate steps (direct jump semantics).
+             */
+            function triggerTransition(targetPage, customConfig = {}) {
+                const sc = { ...CONFIG, ...customConfig };
+                const waveStartTime = Date.now();
+                clearSelection();
+                cards.forEach((card, i) => {
+                    card._queue = [{ targetPage, sc, waveStartTime }];
+                    if (!card._animating) processQueue(card, i);
+                });
+            }
+
+            /*
+             * processQueue — dequeues one step per card and schedules its flip.
+             * Wave delay is computed relative to waveStartTime so all panels
+             * across the whole viewport share the same propagation speed
+             * regardless of how many steps are left in the queue.
+             */
+            function processQueue(card, i) {
+                if (card._queue.length === 0) { card._animating = false; return; }
+                card._animating = true;
+
+                const { targetPage, sc, waveStartTime } = card._queue.shift();
+
+                // Already on the right page — skip
+                if (targetPage === card._visiblePage) { processQueue(card, i); return; }
+
+                // Determine direction (shortest path around the circular page list)
+                let diff = targetPage - card._visiblePage;
+                if (diff > PAGES.length / 2) diff -= PAGES.length;
+                if (diff < -PAGES.length / 2) diff += PAGES.length;
+                const dir = diff >= 0 ? -1 : 1;
+
+                // Wave delay: panels further from centre flip later
+                const halfN = (COLS - 1) / 2;
+                const stepIndex = Math.floor(Math.abs(i - halfN));
+                const staggerMs = sc.durationMs / sc.overlapLimit;
+                const waveDelay = stepIndex * staggerMs;
+                const waitMs = Math.max(0, (waveStartTime + waveDelay) - Date.now());
+
+                setTimeout(() => {
+                    // Which face is currently hidden? — that is the one we write to
+                    const isFrontVisible = Math.round(card._currentRot / 180) % 2 === 0;
+                    const hiddenFace = card.querySelector(isFrontVisible ? '.face.back' : '.face.front');
+
+                    // Write new content into the hidden face before animating
+                    hiddenFace.innerHTML = makeCol(grids[targetPage], i);
+
+                    // Rotate
+                    const deltaAngle = dir * (180 + 360 * sc.spins);
+                    const targetRot = card._currentRot + deltaAngle;
+
+                    card.style.transition = `transform ${sc.durationMs}ms ${sc.easing}`;
+                    card.style.transform = `rotateY(${targetRot}deg)`;
+
+                    card._currentRot = targetRot;
+                    card._visiblePage = targetPage;
+
+                    // Continue processing the queue after the flip completes
+                    setTimeout(() => processQueue(card, i), sc.durationMs + 20);
+                }, waitMs);
+            }
+
+            function goTo(target) {
+                if (target === cur || target < 0 || target >= PAGES.length) return;
+                cur = target;
+                updateHUD(target);
+                triggerTransition(target);
+            }
+
+            function navigate(dir) {
+                goTo((cur + dir + PAGES.length) % PAGES.length);
+            }
+
+            // ── Input listeners ──────────────────────────────────────────────────
+            let wLock = false;
+            window.addEventListener('wheel', e => {
+                e.preventDefault();
+                if (wLock) return;
+                wLock = true;
+                navigate(e.deltaY > 0 ? 1 : -1);
+                setTimeout(() => { wLock = false; }, CONFIG.scrollDebounceMs);
+            }, { passive: false });
+
+            window.addEventListener('keydown', e => {
+                if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'ArrowRight') { e.preventDefault(); navigate(1); }
+                if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+            });
+
+            let touchY0 = 0;
+            window.addEventListener('touchstart', e => { touchY0 = e.touches[0].clientY; }, { passive: true });
+            window.addEventListener('touchend', e => {
+                const dy = touchY0 - e.changedTouches[0].clientY;
+                if (Math.abs(dy) > 50) navigate(dy > 0 ? 1 : -1);
+            }, { passive: true });
+
+            // Reload on resize — grid column count changes with window width
+            window.addEventListener('resize', () => window.location.reload());
+
+            // ── Copy-paste: Ctrl/Cmd+C copies page text row-by-row ───────────
+            // user-select: none on .col-face removes the confusing vertical
+            // blue selection. Ctrl+C uses navigator.clipboard for clean output.
+            function getPageText() {
+                const grid = grids[cur];
+                const lines = grid.map(row => row.map(c => c.char).join('').trimEnd());
+                // Drop trailing blank lines
+                let last = lines.length - 1;
+                while (last > 0 && !lines[last].trim()) last--;
+                return lines.slice(0, last + 1).join('\n');
+            }
+
+            function showToast(msg) {
+                const el = document.createElement('div');
+                el.textContent = msg;
+                el.style.cssText = [
+                    'position:fixed', 'top:1.5rem', 'left:50%',
+                    'transform:translateX(-50%)',
+                    `font-family:'Share Tech Mono',monospace`,
+                    'font-size:0.65rem', 'letter-spacing:0.25em',
+                    `color:${THEME.bg}`, `background:${THEME.primary}`,
+                    'padding:0.25rem 1rem', 'z-index:9999',
+                    'pointer-events:none',
+                    'transition:opacity 0.4s ease',
+                ].join(';');
+                document.body.appendChild(el);
+                setTimeout(() => { el.style.opacity = '0'; }, 900);
+                setTimeout(() => el.remove(), 1400);
+            }
+
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                    const textToCopy = getSelectionText() || getPageText();
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showToast('COPIED');
+                    }).catch(() => {
+                        // Fallback for non-HTTPS: write to a temp textarea
+                        const ta = document.createElement('textarea');
+                        ta.value = textToCopy;
+                        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        showToast('COPIED');
+                    });
+                }
+            });
+
+            updateHUD(0);
+        }
     </script>
+
 </body>
 
 </html>
