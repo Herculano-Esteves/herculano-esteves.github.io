@@ -1,12 +1,6 @@
 /**
  * transitions.js — Scramble and flip animation engine.
  *
- * Changes vs. the original inline script:
- *  1. runFlipTransition no longer calls card.querySelector() — uses card._frontFace /
- *     card._backFace references stored during buildDOM() in renderer.js.
- *  2. Both transition types call invalidatePre(col) in their completion callback so
- *     the visiblePres[] cache in renderer.js stays accurate after every page change.
- *  3. grids and PAGES.length are passed in at init time (no globals needed).
  */
 
 import { CONFIG, THEME } from './config.js';
@@ -14,11 +8,11 @@ import { cards, makeCol, invalidatePre, getGridDimensions } from './renderer.js'
 
 // ── Module-level state (set by initTransitions) ────────────────────────────────
 
-let grids       = [];   // grids[pageIndex] — pre-computed 2D cell arrays
-let numPages    = 0;    // total number of pages (PAGES.length)
+let grids = [];   // grids[pageIndex] — pre-computed 2D cell arrays
+let numPages = 0;    // total number of pages (PAGES.length)
 
 /** Callback invoked by triggerTransition so input.js can clear selection state. */
-let onTransitionStart = () => {};
+let onTransitionStart = () => { };
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -28,9 +22,9 @@ let onTransitionStart = () => {};
  * @param {Function}     clearSelectionFn - called at the start of each transition
  */
 export function initTransitions(pageGrids, pageCount, clearSelectionFn) {
-    grids             = pageGrids;
-    numPages          = pageCount;
-    onTransitionStart = clearSelectionFn ?? (() => {});
+    grids = pageGrids;
+    numPages = pageCount;
+    onTransitionStart = clearSelectionFn ?? (() => { });
 }
 
 // ── Scramble characters ────────────────────────────────────────────────────────
@@ -52,14 +46,14 @@ function runScrambleTransition(card, col, targetPage, sc, onComplete) {
 
     // Which face is currently visible? Same logic as invalidatePre in renderer.js
     const isFront = Math.round(card._currentRot / 180) % 2 === 0;
-    const face    = isFront ? card._frontFace : card._backFace;
-    const pre     = face?.firstElementChild ?? null;
+    const face = isFront ? card._frontFace : card._backFace;
+    const pre = face?.firstElementChild ?? null;
 
     if (!pre) { onComplete(); return; }
 
     const oldGrid = grids[card._visiblePage];
     const newGrid = grids[targetPage];
-    const spans   = pre.children;
+    const spans = pre.children;
 
     // Collect only the cells that actually change — skip the rest
     const changingRows = [];
@@ -67,15 +61,17 @@ function runScrambleTransition(card, col, targetPage, sc, onComplete) {
         const oldCell = oldGrid[r]?.[col] ?? { char: ' ', color: THEME.primary };
         const newCell = newGrid[r]?.[col] ?? { char: ' ', color: THEME.primary };
         const isChanging =
-            oldCell.char    !== newCell.char   ||
-            oldCell.color   !== newCell.color  ||
-            oldCell.underline !== newCell.underline;
+            oldCell.char !== newCell.char ||
+            oldCell.color !== newCell.color ||
+            oldCell.underline !== newCell.underline ||
+            oldCell.invert !== newCell.invert;
         if (isChanging) {
             changingRows.push({
-                row:            r,
-                targetChar:     newCell.char,
-                targetColor:    newCell.color,
+                row: r,
+                targetChar: newCell.char,
+                targetColor: newCell.color,
                 targetUnderline: newCell.underline,
+                targetInvert: newCell.invert,
             });
         }
     }
@@ -84,23 +80,24 @@ function runScrambleTransition(card, col, targetPage, sc, onComplete) {
     if (changingRows.length === 0) { onComplete(); return; }
 
     const startTime = Date.now();
-    const interval  = setInterval(() => {
+    const interval = setInterval(() => {
         const elapsed = Date.now() - startTime;
 
         if (elapsed >= sc.scrambleDurationMs) {
             clearInterval(interval);
             // Write final target characters
-            changingRows.forEach(({ row, targetChar, targetColor, targetUnderline }) => {
+            changingRows.forEach(({ row, targetChar, targetColor, targetUnderline, targetInvert }) => {
                 const span = spans[row];
                 if (!span) return;
                 const ch = targetChar === '&' ? '&amp;'
-                         : targetChar === '<' ? '&lt;'
-                         : targetChar === '>' ? '&gt;'
-                         : targetChar;
-                span.innerHTML           = ch;
-                span.style.color         = targetColor;
+                    : targetChar === '<' ? '&lt;'
+                        : targetChar === '>' ? '&gt;'
+                            : targetChar;
+                span.innerHTML = ch;
+                span.style.color = targetInvert ? THEME.bg : targetColor;
+                span.style.backgroundColor = targetInvert ? targetColor : '';
                 span.style.textDecoration = targetUnderline ? 'underline' : '';
-                span._origColor          = targetColor;
+                span._origColor = targetColor;
             });
             onComplete();
         } else {
@@ -108,8 +105,9 @@ function runScrambleTransition(card, col, targetPage, sc, onComplete) {
             changingRows.forEach(({ row }) => {
                 const span = spans[row];
                 if (!span) return;
-                span.textContent         = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-                span.style.color         = THEME.primary;
+                span.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+                span.style.color = THEME.primary;
+                span.style.backgroundColor = '';
                 span.style.textDecoration = '';
             });
         }
@@ -137,11 +135,11 @@ function runFlipTransition(card, col, targetPage, sc, dir, onComplete) {
     hiddenFace.innerHTML = makeCol(grids[targetPage], col);
 
     const deltaAngle = dir * (180 + 360 * sc.spins);
-    const targetRot  = card._currentRot + deltaAngle;
+    const targetRot = card._currentRot + deltaAngle;
 
     card.style.transition = `transform ${sc.durationMs}ms ${sc.easing}`;
-    card.style.transform  = `rotateY(${targetRot}deg)`;
-    card._currentRot      = targetRot;
+    card.style.transform = `rotateY(${targetRot}deg)`;
+    card._currentRot = targetRot;
 
     setTimeout(onComplete, sc.durationMs + 20);
 }
@@ -158,24 +156,24 @@ function processQueue(card, col) {
     card._animating = true;
 
     const { targetPage, sc, waveStartTime } = card._queue.shift();
-    const { COLS }   = getGridDimensions();
+    const { COLS } = getGridDimensions();
 
     // Already showing the right page — nothing to do
     if (targetPage === card._visiblePage) { processQueue(card, col); return; }
 
     // Shortest-path direction around the circular page list
     let diff = targetPage - card._visiblePage;
-    if (diff >  numPages / 2) diff -= numPages;
+    if (diff > numPages / 2) diff -= numPages;
     if (diff < -numPages / 2) diff += numPages;
     const dir = diff >= 0 ? -1 : 1;
 
     // Wave delay: panels further from centre start later
-    const halfN          = (COLS - 1) / 2;
-    const stepIndex      = Math.floor(Math.abs(col - halfN));
+    const halfN = (COLS - 1) / 2;
+    const stepIndex = Math.floor(Math.abs(col - halfN));
     const activeDuration = sc.transitionType === 'scramble' ? sc.scrambleDurationMs : sc.durationMs;
-    const staggerMs      = activeDuration / sc.overlapLimit;
-    const waveDelay      = stepIndex * staggerMs;
-    const waitMs         = Math.max(0, (waveStartTime + waveDelay) - Date.now());
+    const staggerMs = activeDuration / sc.overlapLimit;
+    const waveDelay = stepIndex * staggerMs;
+    const waitMs = Math.max(0, (waveStartTime + waveDelay) - Date.now());
 
     setTimeout(() => {
         const type = sc.transitionType || 'flip';
@@ -204,7 +202,7 @@ function processQueue(card, col) {
  * @param {object} [customConfig] - overrides for CONFIG values
  */
 export function triggerTransition(targetPage, customConfig = {}) {
-    const sc           = { ...CONFIG, ...customConfig };
+    const sc = { ...CONFIG, ...customConfig };
     const waveStartTime = Date.now();
     onTransitionStart();
     cards.forEach((card, col) => {

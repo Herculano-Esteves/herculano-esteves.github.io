@@ -1,13 +1,6 @@
 /**
  * input.js — All user input event handling.
  *
- * PERFORMANCE FIXES:
- *  1. mousemove is throttled via requestAnimationFrame — the actual handler
- *     runs at most once per display frame (~16ms) instead of on every raw event.
- *  2. resize is debounced 200ms before reloading — prevents repeated reloads
- *     from the mobile browser address bar toggling or window snapping.
- *  3. The two separate keydown listeners (navigation + copy) are consolidated
- *     into a single handler.
  */
 
 import { CONFIG, THEME } from './config.js';
@@ -23,12 +16,12 @@ import {
 
 // ── Module state (set by initInput) ───────────────────────────────────────────
 
-let scene       = null;
+let scene = null;
 let pageButtons = [];
-let grids       = [];
-let getCur      = () => 0;
-let goToFn      = () => {};
-let numPages    = 1;
+let grids = [];
+let getCur = () => 0;
+let goToFn = () => { };
+let numPages = 1;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -41,12 +34,12 @@ let numPages    = 1;
  * @param {number}       pageCount
  */
 export function initInput(sceneEl, pageButtonsArr, pageGrids, getCurFn, goToPageFn, pageCount) {
-    scene       = sceneEl;
+    scene = sceneEl;
     pageButtons = pageButtonsArr;
-    grids       = pageGrids;
-    getCur      = getCurFn;
-    goToFn      = goToPageFn;
-    numPages    = pageCount;
+    grids = pageGrids;
+    getCur = getCurFn;
+    goToFn = goToPageFn;
+    numPages = pageCount;
 
     setupMouse();
     setupKeyboard();
@@ -63,15 +56,15 @@ function navigate(dir) {
 
 // ── Cell-aligned, throttled mousemove ──────────────────────────────────────────
 
-let rafPending     = false;
+let rafPending = false;
 let lastMouseEvent = null;
-let lastPage       = -1;
-let lastCol        = -1;
-let lastRow        = -1;
+let lastPage = -1;
+let lastCol = -1;
+let lastRow = -1;
 
 function processMouseMove(e) {
     const { CHAR_W, CHAR_H } = getCharDimensions();
-    const { COLS, ROWS }     = getGridDimensions();
+    const { COLS, ROWS } = getGridDimensions();
     const col = Math.floor(e.clientX / CHAR_W);
     const row = Math.floor(e.clientY / CHAR_H);
 
@@ -85,7 +78,7 @@ function processMouseMove(e) {
 
     // ── Button hover ──────────────────────────────────────────────────────
     const buttons = pageButtons[getCur()] ?? [];
-    const active  = updateButtonHover(col, row, buttons);
+    const active = updateButtonHover(col, row, buttons);
     if (active) { clearCursor(); return; }
 
     // ── Character cursor ──────────────────────────────────────────────────
@@ -128,7 +121,7 @@ function setupMouse() {
         if (active) { active.action(); return; }
         clearCursor();
         const { CHAR_W, CHAR_H } = getCharDimensions();
-        const { COLS, ROWS }     = getGridDimensions();
+        const { COLS, ROWS } = getGridDimensions();
         const col = Math.max(0, Math.min(COLS - 1, Math.floor(e.clientX / CHAR_W)));
         const row = Math.max(0, Math.min(ROWS - 1, Math.floor(e.clientY / CHAR_H)));
         startSelection(col, row);
@@ -148,8 +141,8 @@ function setupMouse() {
 function setupKeyboard() {
     window.addEventListener('keydown', e => {
         // Navigation
-        if (e.key === 'ArrowDown'  || e.key === 'PageDown'  || e.key === 'ArrowRight') { e.preventDefault(); navigate(1);  return; }
-        if (e.key === 'ArrowUp'    || e.key === 'PageUp'    || e.key === 'ArrowLeft')  { e.preventDefault(); navigate(-1); return; }
+        if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'ArrowRight') { e.preventDefault(); navigate(1); return; }
+        if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); return; }
 
         // Copy — Ctrl+C / Cmd+C
         if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
@@ -166,7 +159,7 @@ function setupKeyboard() {
 function setupTouch() {
     let touchY0 = 0;
     window.addEventListener('touchstart', e => { touchY0 = e.touches[0].clientY; }, { passive: true });
-    window.addEventListener('touchend',   e => {
+    window.addEventListener('touchend', e => {
         const dy = touchY0 - e.changedTouches[0].clientY;
         if (Math.abs(dy) > 50) navigate(dy > 0 ? 1 : -1);
     }, { passive: true });
@@ -214,7 +207,7 @@ function writeToClipboard(text) {
         .catch(() => {
             // Fallback for non-HTTPS contexts
             const ta = document.createElement('textarea');
-            ta.value         = text;
+            ta.value = text;
             ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
             document.body.appendChild(ta);
             ta.select();
@@ -243,7 +236,7 @@ function showToast(msg) {
         ].join(';');
         document.body.appendChild(toastEl);
     }
-    toastEl.textContent   = msg;
+    toastEl.textContent = msg;
     toastEl.style.opacity = '1';
     clearTimeout(toastEl._timer);
     toastEl._timer = setTimeout(() => { toastEl.style.opacity = '0'; }, 900);

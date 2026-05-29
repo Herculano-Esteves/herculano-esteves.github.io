@@ -1,13 +1,6 @@
 /**
  * selection.js — Text selection state and visual feedback.
  *
- * PERFORMANCE FIX: The original updateSelectionVisuals() iterated ALL ROWS×COLS
- * spans on every mousemove drag event — up to 30 000 DOM reads/writes per event.
- *
- * This version maintains a `selectedSpans` Set. On each drag extension:
- *   - Only spans that leave the selection range are cleared  — O(removed)
- *   - Only new spans entering the range are styled           — O(added)
- * For small drag movements (the common case), this is O(1) instead of O(n²).
  */
 
 import { THEME } from './config.js';
@@ -17,7 +10,7 @@ import { clearActiveButton } from './cursor.js';
 // ── State ─────────────────────────────────────────────────────────────────────
 
 let selectStart = null;
-let selectEnd   = null;
+let selectEnd = null;
 export let isSelecting = false;
 
 /**
@@ -31,16 +24,16 @@ const selectedSpans = new Set();
 function applySelect(span, linearIdx) {
     if (span._origColor === undefined) span._origColor = span.style.color || '';
     span.style.backgroundColor = span._origColor || THEME.primary;
-    span.style.color           = THEME.bg;
-    span._selected             = true;
-    span._selIdx               = linearIdx; // used to cull stale spans efficiently
+    span.style.color = THEME.bg;
+    span._selected = true;
+    span._selIdx = linearIdx; // used to cull stale spans efficiently
     selectedSpans.add(span);
 }
 
 function removeSelect(span) {
     span.style.backgroundColor = '';
-    span.style.color           = span._origColor ?? '';
-    span._selected             = false;
+    span.style.color = span._origColor ?? '';
+    span._selected = false;
     selectedSpans.delete(span);
 }
 
@@ -54,7 +47,7 @@ export function clearSelection() {
     for (const span of selectedSpans) removeSelect(span);
     selectedSpans.clear();
     selectStart = null;
-    selectEnd   = null;
+    selectEnd = null;
     isSelecting = false;
 }
 
@@ -63,7 +56,7 @@ export function startSelection(col, row) {
     clearSelection();
     isSelecting = true;
     selectStart = { col, row };
-    selectEnd   = { col, row };
+    selectEnd = { col, row };
 }
 
 /**
@@ -79,9 +72,9 @@ export function extendSelection(col, row) {
     selectEnd = { col, row };
 
     const startIdx = selectStart.row * COLS + selectStart.col;
-    const rawEnd   = row * COLS + col;
-    const newMin   = Math.min(startIdx, rawEnd);
-    const newMax   = Math.max(startIdx, rawEnd);
+    const rawEnd = row * COLS + col;
+    const newMin = Math.min(startIdx, rawEnd);
+    const newMax = Math.max(startIdx, rawEnd);
 
     // Remove spans no longer in the selection range — O(currently selected)
     for (const span of [...selectedSpans]) {
@@ -90,9 +83,9 @@ export function extendSelection(col, row) {
 
     // Add spans newly inside the range — only touches the delta
     for (let idx = newMin; idx <= newMax; idx++) {
-        const r    = Math.floor(idx / COLS);
-        const c    = idx % COLS;
-        const pre  = getVisiblePre(c);
+        const r = Math.floor(idx / COLS);
+        const c = idx % COLS;
+        const pre = getVisiblePre(c);
         const span = pre?.children[r];
         if (span && !span._selected) applySelect(span, idx);
     }
@@ -124,21 +117,21 @@ export function getSelectionText(grids, cur) {
     const { COLS } = getGridDimensions();
 
     const startIdx = selectStart.row * COLS + selectStart.col;
-    const endIdx   = selectEnd.row   * COLS + selectEnd.col;
-    const minIdx   = Math.min(startIdx, endIdx);
-    const maxIdx   = Math.max(startIdx, endIdx);
+    const endIdx = selectEnd.row * COLS + selectEnd.col;
+    const minIdx = Math.min(startIdx, endIdx);
+    const maxIdx = Math.max(startIdx, endIdx);
     if (minIdx === maxIdx) return '';
 
     const rStart = Math.floor(minIdx / COLS);
     const cStart = minIdx % COLS;
-    const rEnd   = Math.floor(maxIdx / COLS);
-    const cEnd   = maxIdx % COLS;
-    const grid   = grids[cur];
-    const lines  = [];
+    const rEnd = Math.floor(maxIdx / COLS);
+    const cEnd = maxIdx % COLS;
+    const grid = grids[cur];
+    const lines = [];
 
     for (let r = rStart; r <= rEnd; r++) {
         const cS = (r === rStart) ? cStart : 0;
-        const cE = (r === rEnd)   ? cEnd   : COLS - 1;
+        const cE = (r === rEnd) ? cEnd : COLS - 1;
         let rowStr = '';
         for (let c = cS; c <= cE; c++) rowStr += grid[r]?.[c]?.char ?? ' ';
         if (r < rEnd || cE === COLS - 1) rowStr = rowStr.trimEnd();

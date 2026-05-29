@@ -1,20 +1,5 @@
 /**
  * cursor.js — Cursor and button hover via CSS overlay divs.
- *
- * ROOT CAUSE OF 27% CPU:
- *   Even with RAF throttling, writing span.style.color / span.style.backgroundColor
- *   triggers a browser Style Recalculation across the entire layout tree (~7500 spans
- *   across 150 column elements). Firefox runs this on the main thread on every cell
- *   change AND on every blink tick (~2/s).
- *
- * FIX — Two fixed overlay <div>s:
- *   #cursor-cell  — 1 char cell, moved via transform: translate(x, y)
- *   #button-over  — N×M char region, resized + moved on button enter/leave
- *
- *   CSS transform changes go directly to the compositor thread (GPU).
- *   They do NOT trigger layout, paint, or style recalculation.
- *   The blink is a CSS animation on `opacity` — entirely GPU, zero JS involvement.
- *
  *   Result: cursor-related DOM writes drop from ~120/second to ~0/second.
  */
 
@@ -39,8 +24,8 @@ function hexToRgba(hex, alpha) {
 
 let cursorEl = null;
 let buttonEl = null;
-let CHAR_W   = 0;
-let CHAR_H   = 0;
+let CHAR_W = 0;
+let CHAR_H = 0;
 
 // ── Cursor position state ─────────────────────────────────────────────────────
 
@@ -67,17 +52,17 @@ export function initCursorOverlay(charW, charH) {
     cursorEl = document.createElement('div');
     cursorEl.id = 'cursor-cell';
     Object.assign(cursorEl.style, {
-        position:    'fixed',
-        top:         '0',
-        left:        '0',
-        width:       `${charW}px`,
-        height:      `${charH}px`,
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: `${charW}px`,
+        height: `${charH}px`,
         pointerEvents: 'none',
-        zIndex:      '150',
-        boxSizing:   'border-box',
-        border:      `1px solid ${THEME.primary}`,
-        background:  hexToRgba(THEME.primary, 0.25),
-        transform:   OFFSCREEN,
+        zIndex: '150',
+        boxSizing: 'border-box',
+        border: `1px solid ${THEME.primary}`,
+        background: hexToRgba(THEME.primary, 0.25),
+        transform: OFFSCREEN,
     });
     document.body.appendChild(cursorEl);
 
@@ -85,15 +70,15 @@ export function initCursorOverlay(charW, charH) {
     buttonEl = document.createElement('div');
     buttonEl.id = 'button-over';
     Object.assign(buttonEl.style, {
-        position:    'fixed',
-        top:         '0',
-        left:        '0',
+        position: 'fixed',
+        top: '0',
+        left: '0',
         pointerEvents: 'none',
-        zIndex:      '140',
-        boxSizing:   'border-box',
-        border:      `1px solid ${hexToRgba(THEME.primary, 0.5)}`,
-        background:  hexToRgba(THEME.primary, 0.12),
-        transform:   OFFSCREEN,
+        zIndex: '140',
+        boxSizing: 'border-box',
+        border: `1px solid ${hexToRgba(THEME.primary, 0.5)}`,
+        background: hexToRgba(THEME.primary, 0.12),
+        transform: OFFSCREEN,
     });
     document.body.appendChild(buttonEl);
 }
@@ -119,7 +104,7 @@ export function moveCursor(col, row) {
     if (!cursorEl) return;
 
     // Don't show cursor overlay on top of selected text
-    const pre  = getVisiblePre(col);
+    const pre = getVisiblePre(col);
     const span = pre?.children[row];
     if (span?._selected) { clearCursor(); return; }
 
@@ -164,8 +149,8 @@ export function updateButtonHover(col, row, pageButtons) {
 
     if (hovered) {
         // Resize + reposition the button overlay (one-shot on enter, not per-frame)
-        buttonEl.style.width     = `${hovered.w * CHAR_W}px`;
-        buttonEl.style.height    = `${hovered.h * CHAR_H}px`;
+        buttonEl.style.width = `${hovered.w * CHAR_W}px`;
+        buttonEl.style.height = `${hovered.h * CHAR_H}px`;
         buttonEl.style.transform = `translate(${hovered.col * CHAR_W}px, ${hovered.row * CHAR_H}px)`;
     } else {
         buttonEl.style.transform = OFFSCREEN;

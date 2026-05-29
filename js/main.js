@@ -18,7 +18,6 @@ import { initInput }                                  from './input.js';
 
 const scene   = document.getElementById('scene');
 const hud     = document.getElementById('hud');
-const counter = document.getElementById('counter');
 
 // ── App state ─────────────────────────────────────────────────────────────────
 
@@ -110,7 +109,4 @@ function goTo(target) {
 
 function updateHUD(page) {
     dots.forEach((d, i) => d.classList.toggle('active', i === page));
-    counter.textContent =
-        String(page + 1).padStart(2, '0') + ' / ' +
-        String(PAGES.length).padStart(2, '0');
 }

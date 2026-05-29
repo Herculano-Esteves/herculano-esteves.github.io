@@ -1,23 +1,14 @@
 /**
  * renderer.js — DOM construction and fast column-HTML generation.
  *
- * KEY OPTIMISATION: visiblePres[]
- *   Previously, every mousemove event called cards.map(card => getVisiblePre(card))
- *   which ran card.querySelector('.face.front/.face.back') for every column — up to
- *   ~150 DOM queries per event at 60 events/s.
- *
- *   visiblePres[col] is a flat array that caches the currently-visible <pre> element
- *   for each column. It is seeded during buildDOM() and re-validated only when a
- *   transition completes (invalidatePre). All hot-path code (mousemove, hover, selection)
- *   reads from this O(1) array instead of querying the DOM.
  */
 
 import { CONFIG, THEME } from './config.js';
 
 // ── Module-level state (set by initRenderer) ──────────────────────────────────
 
-let COLS   = 0;
-let ROWS   = 0;
+let COLS = 0;
+let ROWS = 0;
 let CHAR_W = 0;
 let CHAR_H = 0;
 
@@ -43,8 +34,8 @@ let visiblePres = [];
  * @param {number} charH  - pixel height of one character cell
  */
 export function initRenderer(cols, rows, charW, charH) {
-    COLS   = cols;
-    ROWS   = rows;
+    COLS = cols;
+    ROWS = rows;
     CHAR_W = charW;
     CHAR_H = charH;
     visiblePres = new Array(COLS).fill(null);
@@ -74,11 +65,12 @@ export function makeCol(grid, col) {
         const cell = grid[row]?.[col] ?? { char: ' ', color: THEME.primary };
         // Escape HTML special characters that can appear in page content
         const ch = cell.char === '&' ? '&amp;'
-                 : cell.char === '<' ? '&lt;'
-                 : cell.char === '>' ? '&gt;'
-                 : cell.char;
+            : cell.char === '<' ? '&lt;'
+                : cell.char === '>' ? '&gt;'
+                    : cell.char;
         const decor = cell.underline ? ';text-decoration:underline' : '';
-        parts.push(`<span style="color:${cell.color}${decor}">${ch}</span>`);
+        const bg = cell.invert ? `;background:${cell.color};color:${THEME.bg}` : `color:${cell.color}`;
+        parts.push(`<span style="${bg}${decor}">${ch}</span>`);
         if (row < ROWS - 1) parts.push('\n');
     }
     parts.push('</pre>');
@@ -144,12 +136,12 @@ export function buildDOM(scene, grids) {
 
         // Cache face references directly on the card element.
         // This means transitions and invalidatePre never need querySelector.
-        card._frontFace   = front;
-        card._backFace    = back;
+        card._frontFace = front;
+        card._backFace = back;
 
-        card._queue       = [];
-        card._animating   = false;
-        card._currentRot  = 0;
+        card._queue = [];
+        card._animating = false;
+        card._currentRot = 0;
         card._visiblePage = 0;
 
         card.appendChild(front);
