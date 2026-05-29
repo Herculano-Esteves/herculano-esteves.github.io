@@ -17,12 +17,10 @@ import { initInput }                                  from './input.js';
 // ── DOM references (these divs never change) ──────────────────────────────────
 
 const scene   = document.getElementById('scene');
-const hud     = document.getElementById('hud');
 
 // ── App state ─────────────────────────────────────────────────────────────────
 
 let cur  = 0;
-let dots = [];
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
@@ -81,18 +79,10 @@ function init() {
     initCursorOverlay(CHAR_W, CHAR_H);
     initTransitions(grids, PAGES.length, clearSelection);
 
-    // ── HUD ────────────────────────────────────────────────────────────────
-    dots = PAGES.map((_, idx) => {
-        const d = document.createElement('div');
-        d.id        = 'dot-' + idx;
-        d.className = 'dot' + (idx === cur ? ' active' : '');
-        d.setAttribute('aria-label', 'Page ' + (idx + 1));
-        d.addEventListener('click', () => goTo(idx));
-        hud.appendChild(d);
-        return d;
+    // ── Navigation Event Listener ──────────────────────────────────────────
+    window.addEventListener('nav-to-page', e => {
+        goTo(e.detail.page);
     });
-
-    updateHUD(cur);
 
     // ── Input ──────────────────────────────────────────────────────────────
     initInput(scene, pageButtons, grids, () => cur, goTo, PAGES.length);
@@ -103,10 +93,5 @@ function init() {
 function goTo(target) {
     if (target === cur || target < 0 || target >= PAGES.length) return;
     cur = target;
-    updateHUD(target);
     triggerTransition(target);
-}
-
-function updateHUD(page) {
-    dots.forEach((d, i) => d.classList.toggle('active', i === page));
 }

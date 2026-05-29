@@ -56,7 +56,7 @@ function drawNavbar(g, cols, buttons, activeIdx) {
             w: btnText.length,
             h: 1,
             action: () => {
-                document.getElementById('dot-' + idx)?.click();
+                window.dispatchEvent(new CustomEvent('nav-to-page', { detail: { page: idx } }));
             }
         });
         

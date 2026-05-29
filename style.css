@@ -79,35 +79,6 @@ body {
     text-decoration-skip-ink: none;
 }
 
-/* ── Navigation dots ── */
-#hud {
-    position: fixed;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 0.6rem;
-    z-index: 200;
-}
 
-.dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 0;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.dot:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.dot.active {
-    background: var(--accent, #39ff14);
-    border-color: var(--accent, #39ff14);
-    box-shadow: 0 0 8px var(--accent, #39ff14);
-}
 
 
