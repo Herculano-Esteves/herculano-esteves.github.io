@@ -43,7 +43,12 @@ function init() {
 
     const CHAR_W = Math.round(rect.width);
     const CHAR_H = Math.round(rect.height);
-    const COLS = Math.floor(window.innerWidth / CHAR_W);
+    let COLS = Math.floor(window.innerWidth / CHAR_W);
+    // Force COLS to be an odd number so there is a single central column.
+    // This allows odd-length headers (Herculano, Esteves, About, Contact) to align perfectly.
+    if (COLS % 2 === 0) {
+        COLS--;
+    }
     const ROWS = Math.floor(window.innerHeight / CHAR_H);
 
     // ── Initialise renderer ────────────────────────────────────────────────

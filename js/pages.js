@@ -14,18 +14,28 @@ import {
 
 // ── Shared Navigation Header ──────────────────────────────────────────────────
 
+function padCenter(str, targetLen) {
+    if (str.length >= targetLen) return str;
+    const diff = targetLen - str.length;
+    const left = Math.floor(diff / 2);
+    const right = diff - left;
+    return ' '.repeat(left) + str + ' '.repeat(right);
+}
+
 function drawNavbar(g, cols, buttons, activeIdx) {
     const pages = ['HOME', 'ABOUT', 'PROJECTS', 'CONTACT'];
+    const maxLen = Math.max(...pages.map(p => p.length));
 
-    // [ HOME ]   [ ABOUT ]   [ PROJECTS ]   [ CONTACT ]
-    const formatted = pages.map(p => `[ ${p} ]`);
+    // Uniformly padded page names (e.g. "  HOME  " to match "PROJECTS")
+    const formatted = pages.map(p => `[ ${padCenter(p, maxLen)} ]`);
     const totalW = formatted.join('   ').length;
 
     let startCol = centerTextCol(' '.repeat(totalW), cols);
     const row = 1;
 
     pages.forEach((name, idx) => {
-        const btnText = `[ ${name} ]`;
+        const paddedName = padCenter(name, maxLen);
+        const btnText = `[ ${paddedName} ]`;
         const isActive = (idx === activeIdx);
 
         // Render '[ '
@@ -33,11 +43,11 @@ function drawNavbar(g, cols, buttons, activeIdx) {
 
         // Render the name (with invert if active)
         const nameCol = startCol + 2;
-        for (let i = 0; i < name.length; i++) {
+        for (let i = 0; i < paddedName.length; i++) {
             const c = nameCol + i;
             if (c >= 0 && c < cols && row >= 0 && row < g.length) {
                 g[row][c] = {
-                    char: name[i],
+                    char: paddedName[i],
                     color: THEME.primary,
                     invert: isActive
                 };
@@ -45,7 +55,7 @@ function drawNavbar(g, cols, buttons, activeIdx) {
         }
 
         // Render ' ]'
-        renderText(g, ' ]', nameCol + name.length, row, THEME.dim);
+        renderText(g, ' ]', nameCol + paddedName.length, row, THEME.dim);
 
         // Register button
         buttons.push({
@@ -78,10 +88,9 @@ export const PAGES = [
             renderText(g, 'Esteves', startColEst, mid, THEME.primary);
 
             const rowSoftware = mid + 5; // 4 blank lines after Esteves
-            const fullL1 = 'software_engineer  @  University of Minho';
-            const startColL1 = centerTextCol(fullL1, cols);
-            renderText(g, 'software_engineer', startColL1, rowSoftware, THEME.primary);
-            renderText(g, '@  University of Minho', startColL1 + 19, rowSoftware, THEME.dim);
+            const centerCol = Math.floor(cols / 2);
+            renderText(g, 'software_engineer', centerCol - 19, rowSoftware, THEME.primary);
+            renderText(g, '@  University of Minho', centerCol, rowSoftware, THEME.dim);
 
             const githubCol = centerTextCol('github', cols);
             renderButton(g, buttons, 'github', githubCol, rowSoftware + 2, () => {
