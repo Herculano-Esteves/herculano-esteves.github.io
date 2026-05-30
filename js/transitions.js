@@ -137,6 +137,7 @@ function runFlipTransition(card, col, targetPage, sc, dir, onComplete) {
     const deltaAngle = dir * (180 + 360 * sc.spins);
     const targetRot = card._currentRot + deltaAngle;
 
+    card.style.willChange = 'transform';
     card.style.transition = `transform ${sc.durationMs}ms ${sc.easing}`;
     card.style.transform = `rotateY(${targetRot}deg)`;
     card._currentRot = targetRot;
@@ -179,6 +180,7 @@ function processQueue(card, col) {
         const type = sc.transitionType || 'flip';
 
         const onDone = () => {
+            card.style.willChange = '';
             card._visiblePage = targetPage;
             invalidatePre(col);  // ← keep visiblePres[] cache in sync
             processQueue(card, col);

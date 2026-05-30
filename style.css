@@ -1,3 +1,15 @@
+/* ── Theme Variables ── */
+:root {
+    --bg: #000000;
+    --primary: #39ff14;
+    --dim: #1a5c00;
+    --muted: #0a2e00;
+
+    /* Derived styles via modern CSS color-mix */
+    --primary-border: color-mix(in srgb, var(--primary) 50%, transparent);
+    --primary-bg-hover: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
 /* ── Reset ── */
 *,
 *::before,
@@ -12,7 +24,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #000;
+    background: var(--bg);
     font-family: 'Share Tech Mono', 'Courier New', monospace;
     cursor: none;
     /* native cursor hidden — inverted character cell acts as cursor */
@@ -41,7 +53,6 @@ body {
     position: relative;
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
-    will-change: transform;
 }
 
 /* ── Front and back faces ── */
@@ -61,7 +72,7 @@ body {
 /*
  * .col-face — a <pre> that fills the face.
  * Each line = one character in the column.
- * font-size and background set inline from CONFIG / THEME.
+ * font-size set inline from CONFIG.
  */
 .col-face {
     position: absolute;
@@ -70,6 +81,7 @@ body {
     line-height: 1;
     white-space: pre;
     overflow: hidden;
+    background: var(--bg);
     font-family: 'Share Tech Mono', 'Courier New', monospace;
     user-select: none;
     /* prevents vertical DOM-order text selection */
@@ -77,4 +89,34 @@ body {
 
 .col-face span {
     text-decoration-skip-ink: none;
+}
+
+/* ── Interactive Overlay Elements ── */
+#button-over {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 140;
+    box-sizing: border-box;
+    border: 1px solid var(--primary-border);
+    background: var(--primary-bg-hover);
+    transform: translate(-9999px, 0);
+}
+
+#toast {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--bg);
+    background: var(--primary);
+    padding: 0.25rem 1rem;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }

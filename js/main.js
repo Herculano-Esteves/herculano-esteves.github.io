@@ -59,8 +59,7 @@ function init() {
         return grid;
     });
 
-    // ── CSS custom property (drives HUD dot colour) ────────────────────────
-    document.documentElement.style.setProperty('--accent', THEME.primary);
+
 
     // ── Build DOM ──────────────────────────────────────────────────────────
     buildDOM(scene, grids);

@@ -6,31 +6,15 @@
 import { THEME } from './config.js';
 import { getVisiblePre } from './renderer.js';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function hexToRgba(hex, alpha) {
-    hex = hex.replace('#', '');
-    if (hex.length === 3) {
-        hex = hex.split('').map(c => c + c).join('');
-    }
-    const num = parseInt(hex, 16);
-    const r = (num >> 16) & 255;
-    const g = (num >> 8) & 255;
-    const b = num & 255;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
 // ── Overlay elements (created by initCursorOverlay) ───────────────────────────
 
-let cursorEl = null;
 let buttonEl = null;
 let CHAR_W = 0;
 let CHAR_H = 0;
 
 // ── Cursor position state ─────────────────────────────────────────────────────
-
-let cursorCol = -1;
-let cursorRow = -1;
 
 /** Park offscreen — compositor op, no layout cost */
 const OFFSCREEN = 'translate(-9999px, 0)';
@@ -38,7 +22,7 @@ const OFFSCREEN = 'translate(-9999px, 0)';
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 /**
- * Create and inject the two overlay elements.
+ * Create and inject the button overlay element and set native custom cursor.
  * Must be called after font measurement (CHAR_W / CHAR_H known).
  *
  * @param {number} charW
@@ -48,67 +32,17 @@ export function initCursorOverlay(charW, charH) {
     CHAR_W = charW;
     CHAR_H = charH;
 
-    // ── Cursor overlay ─────────────────────────────────────────────────────
-    cursorEl = document.createElement('div');
-    cursorEl.id = 'cursor-cell';
-    Object.assign(cursorEl.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: `${charW}px`,
-        height: `${charH}px`,
-        pointerEvents: 'none',
-        zIndex: '150',
-        boxSizing: 'border-box',
-        border: `1px solid ${THEME.primary}`,
-        background: hexToRgba(THEME.primary, 0.25),
-        transform: OFFSCREEN,
-    });
-    document.body.appendChild(cursorEl);
+    // ── Native Custom SVG Cursor ───────────────────────────────────────────
+    const svgCursor = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="18" viewBox="0 0 12 18" shape-rendering="crispEdges"><path fill="${THEME.primary}" stroke="#000000" stroke-width="1" d="M0,0 L0,15 L3.5,11.5 L6.5,16.5 L8,15.5 L5,10.5 L9.5,10.5 Z" /></svg>`;
+    const base64 = btoa(svgCursor);
+    const cursorStyle = `url('data:image/svg+xml;base64,${base64}') 0 0, auto`;
+    document.body.style.cursor = cursorStyle;
+    document.documentElement.style.cursor = cursorStyle;
 
     // ── Button hover overlay ───────────────────────────────────────────────
     buttonEl = document.createElement('div');
     buttonEl.id = 'button-over';
-    Object.assign(buttonEl.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        pointerEvents: 'none',
-        zIndex: '140',
-        boxSizing: 'border-box',
-        border: `1px solid ${hexToRgba(THEME.primary, 0.5)}`,
-        background: hexToRgba(THEME.primary, 0.12),
-        transform: OFFSCREEN,
-    });
     document.body.appendChild(buttonEl);
-}
-
-// ── Cursor ────────────────────────────────────────────────────────────────────
-
-export function clearCursor() {
-    if (!cursorEl) return;
-    cursorEl.style.transform = OFFSCREEN;
-    cursorCol = -1;
-    cursorRow = -1;
-}
-
-/**
- * Move the cursor overlay to (col, row).
- * Only writes one CSS transform — compositor-thread operation.
- * No layout, no paint, no style recalculation.
- */
-export function moveCursor(col, row) {
-    if (col === cursorCol && row === cursorRow) return; // same cell — no-op
-    cursorCol = col;
-    cursorRow = row;
-    if (!cursorEl) return;
-
-    // Don't show cursor overlay on top of selected text
-    const pre = getVisiblePre(col);
-    const span = pre?.children[row];
-    if (span?._selected) { clearCursor(); return; }
-
-    cursorEl.style.transform = `translate(${col * CHAR_W}px, ${row * CHAR_H}px)`;
 }
 
 // ── Button hover ──────────────────────────────────────────────────────────────

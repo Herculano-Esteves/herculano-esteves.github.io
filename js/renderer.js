@@ -59,7 +59,7 @@ export function getGridDimensions() { return { COLS, ROWS }; }
  */
 export function makeCol(grid, col) {
     const parts = [
-        `<pre class="col-face" style="font-size:${CONFIG.charSize}px;background:${THEME.bg}">`,
+        `<pre class="col-face" style="font-size:${CONFIG.charSize}px">`,
     ];
     for (let row = 0; row < ROWS; row++) {
         const cell = grid[row]?.[col] ?? { char: ' ', color: THEME.primary };

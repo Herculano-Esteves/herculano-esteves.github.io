@@ -6,7 +6,7 @@
 import { CONFIG, THEME } from './config.js';
 import { getCharDimensions, getGridDimensions } from './renderer.js';
 import {
-    clearCursor, moveCursor,
+    clearActiveButton,
     getActiveHoveredButton, updateButtonHover,
 } from './cursor.js';
 import {
@@ -63,10 +63,23 @@ let lastCol = -1;
 let lastRow = -1;
 
 function processMouseMove(e) {
+    if (!e) return;
     const { CHAR_W, CHAR_H } = getCharDimensions();
     const { COLS, ROWS } = getGridDimensions();
     const col = Math.floor(e.clientX / CHAR_W);
     const row = Math.floor(e.clientY / CHAR_H);
+
+    const currentPage = getCur();
+    if (currentPage !== lastPage) {
+        lastCol = -1;
+        lastRow = -1;
+        lastPage = currentPage;
+    }
+
+    if (col === lastCol && row === lastRow) return;
+
+    lastCol = col;
+    lastRow = row;
 
     // ── Selection drag ────────────────────────────────────────────────────
     if (isSelecting) {
@@ -78,38 +91,28 @@ function processMouseMove(e) {
 
     // ── Button hover ──────────────────────────────────────────────────────
     const buttons = pageButtons[getCur()] ?? [];
-    const active = updateButtonHover(col, row, buttons);
-    if (active) { clearCursor(); return; }
-
-    // ── Character cursor ──────────────────────────────────────────────────
-    moveCursor(col, row);
+    updateButtonHover(col, row, buttons);
 }
 
 function setupMouse() {
-    // Throttle: fire processMouseMove at most once per animation frame,
-    // and ONLY when mouse transitions to a different character cell or page.
+    // Throttle pointer processing and only schedule frame updates when the cursor moves across cell boundaries.
+    // High-frequency events (e.g. 1000Hz gaming mice) inside the same cell are discarded immediately with zero cost.
     window.addEventListener('mousemove', e => {
         const { CHAR_W, CHAR_H } = getCharDimensions();
         const col = Math.floor(e.clientX / CHAR_W);
         const row = Math.floor(e.clientY / CHAR_H);
 
-        const currentPage = getCur();
-        if (currentPage !== lastPage) {
-            lastCol = -1;
-            lastRow = -1;
-            lastPage = currentPage;
-        }
+        // Early discard if we're in the same cell and not actively dragging selection
+        if (col === lastCol && row === lastRow && !isSelecting) return;
 
-        if (col === lastCol && row === lastRow) return;
-
-        lastCol = col;
-        lastRow = row;
         lastMouseEvent = e;
 
         if (!rafPending) {
             rafPending = true;
             requestAnimationFrame(() => {
-                processMouseMove(lastMouseEvent);
+                if (lastMouseEvent) {
+                    processMouseMove(lastMouseEvent);
+                }
                 rafPending = false;
             });
         }
@@ -119,7 +122,6 @@ function setupMouse() {
         if (e.button !== 0) return;
         const active = getActiveHoveredButton();
         if (active) { active.action(); return; }
-        clearCursor();
         const { CHAR_W, CHAR_H } = getCharDimensions();
         const { COLS, ROWS } = getGridDimensions();
         const col = Math.max(0, Math.min(COLS - 1, Math.floor(e.clientX / CHAR_W)));
@@ -130,7 +132,7 @@ function setupMouse() {
     window.addEventListener('mouseup', () => endSelection());
 
     scene.addEventListener('mouseleave', () => {
-        clearCursor();
+        clearActiveButton();
         lastCol = -1;
         lastRow = -1;
     });
@@ -224,16 +226,7 @@ let toastEl = null;
 function showToast(msg) {
     if (!toastEl) {
         toastEl = document.createElement('div');
-        toastEl.style.cssText = [
-            'position:fixed', 'top:1.5rem', 'left:50%',
-            'transform:translateX(-50%)',
-            `font-family:'Share Tech Mono',monospace`,
-            'font-size:0.65rem', 'letter-spacing:0.25em',
-            `color:${THEME.bg}`, `background:${THEME.primary}`,
-            'padding:0.25rem 1rem', 'z-index:9999',
-            'pointer-events:none', 'opacity:0',
-            'transition:opacity 0.4s ease',
-        ].join(';');
+        toastEl.id = 'toast';
         document.body.appendChild(toastEl);
     }
     toastEl.textContent = msg;

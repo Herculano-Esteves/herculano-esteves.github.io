@@ -24,8 +24,19 @@ export const CONFIG = {
 };
 
 export const THEME = {
-    bg:      '#000000',   // Page background (all panels)
-    primary: '#39ff14',   // Neon phosphor green — main text & big ASCII art
-    dim:     '#1a5c00',   // Dimmed green — secondary / body text
-    muted:   '#0a2e00',   // Very dim green — noise / decorative fill (unused by default)
+    bg: '#000000',
+    primary: '#39ff14',
+    dim: '#1a5c00',
+    muted: '#0a2e00',
 };
+
+export function updateThemeFromCSS() {
+    const style = getComputedStyle(document.documentElement);
+    THEME.bg = style.getPropertyValue('--bg').trim() || '#000000';
+    THEME.primary = style.getPropertyValue('--primary').trim() || '#39ff14';
+    THEME.dim = style.getPropertyValue('--dim').trim() || '#1a5c00';
+    THEME.muted = style.getPropertyValue('--muted').trim() || '#0a2e00';
+}
+
+// Sync initially on module load
+updateThemeFromCSS();
