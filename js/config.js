@@ -12,10 +12,10 @@ export const CONFIG = {
 
     // Wave Transition
     transitionType: 'scramble', // 'flip' to use 3D rotating cards, 'scramble' to morph characters in-place
-    scrambleDurationMs: 200,    // Duration of character scramble in ms
+    scrambleDurationMs: 150,    // Duration of character scramble in ms
     scrambleIntervalMs: 20,     // Interval between character cycles in ms
-    durationMs: 30,             // Flip duration per panel (ms) — keep fast for split-flap feel
-    overlapLimit: 10,           // Simultaneous wave steps — higher = faster sweep
+    durationMs: 20,             // Flip duration per panel (ms) — keep fast for split-flap feel
+    overlapLimit: 15,           // Simultaneous wave steps — higher = faster sweep
     spins: 0,                   // Extra full 360° spins per flip (0 = plain half-flip)
     easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
 

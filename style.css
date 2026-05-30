@@ -1,9 +1,10 @@
 /* ── Theme Variables ── */
 :root {
-    --bg: #000000;
-    --primary: #39ff14;
-    --dim: #1a5c00;
-    --muted: #0a2e00;
+    --bg: #0e0e0e;
+    --primary: #ffffff;
+    --dim: #888888;
+    --muted: #333333;
+
 
     /* Derived styles via modern CSS color-mix */
     --primary-border: color-mix(in srgb, var(--primary) 50%, transparent);

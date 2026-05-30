@@ -8,9 +8,7 @@ import { CONFIG, THEME } from './config.js';
 import {
     emptyGrid,
     renderText,
-    renderBigText,
     renderButton,
-    centerBigCol,
     centerTextCol,
 } from './grid.js';
 
@@ -70,21 +68,20 @@ export const PAGES = [
         // Page 1 — Home / name
         build(cols, rows, buttons) {
             const g = emptyGrid(cols, rows);
-            const sc = CONFIG.bigTextScale;
-            const TH = 7 * sc; // big-text block height in rows
 
-            // Vertical centre: name lines + labels + buttons
-            const totalH = 26; // total height of our layout block
-            const top = Math.max(4, Math.floor((rows - totalH) / 2));
+            // Center the name vertically in the viewport
+            const mid = Math.max(5, Math.floor(rows / 2));
 
-            renderBigText(g, 'HERCULANO', centerBigCol('HERCULANO', sc, cols), top, sc, THEME.primary);
-            renderBigText(g, 'ESTEVES', centerBigCol('ESTEVES', sc, cols), top + TH + sc * 2, sc, THEME.dim);
+            const startColHerc = centerTextCol('Herculano', cols);
+            const startColEst = centerTextCol('Esteves', cols);
+            renderText(g, 'Herculano', startColHerc, mid - 1, THEME.primary);
+            renderText(g, 'Esteves', startColEst, mid, THEME.primary);
 
-            const rowSoftware = top + TH + sc * 2 + TH + 2; // top + 18
-            const fullL1 = '> software_engineer  @  University of Minho';
+            const rowSoftware = mid + 5; // 4 blank lines after Esteves
+            const fullL1 = 'software_engineer  @  University of Minho';
             const startColL1 = centerTextCol(fullL1, cols);
-            renderText(g, '> software_engineer', startColL1, rowSoftware, THEME.primary);
-            renderText(g, '  @  University of Minho', startColL1 + 19, rowSoftware, THEME.dim);
+            renderText(g, 'software_engineer', startColL1, rowSoftware, THEME.primary);
+            renderText(g, '@  University of Minho', startColL1 + 19, rowSoftware, THEME.dim);
 
             const githubCol = centerTextCol('github', cols);
             renderButton(g, buttons, 'github', githubCol, rowSoftware + 2, () => {
@@ -94,7 +91,7 @@ export const PAGES = [
             const maxW = 48;
             const startColProj = centerTextCol(' '.repeat(maxW), cols);
 
-            const rowProject = rowSoftware + 4; // top + 22
+            const rowProject = rowSoftware + 4;
             const l2 = 'featured project:';
             renderText(g, l2, startColProj, rowProject, THEME.dim);
 
@@ -121,24 +118,19 @@ export const PAGES = [
         // Page 2 — About
         build(cols, rows, buttons) {
             const g = emptyGrid(cols, rows);
-            const sc = CONFIG.bigTextScale;
-            const TH = 7 * sc;
+            const mid = Math.max(5, Math.floor(rows / 2));
 
             const lines = [
-                '> whoami',
-                '',
                 'Curious, systematic, always building.',
                 'Passionate about elegant solutions',
                 'and the beauty of mathematics in code.',
             ];
-            const totalH = TH + 2 + lines.length;
-            const top = Math.max(4, Math.floor((rows - totalH) / 2));
 
-            renderBigText(g, 'ABOUT', centerBigCol('ABOUT', sc, cols), top, sc, THEME.primary);
+            renderText(g, 'About', centerTextCol('About', cols), mid - 1, THEME.primary);
 
             lines.forEach((ln, i) => {
                 const color = i === 0 ? THEME.primary : THEME.dim;
-                renderText(g, ln, centerTextCol(ln, cols), top + TH + 2 + i, color);
+                renderText(g, ln, centerTextCol(ln, cols), mid + 5 + i, color);
             });
 
             drawNavbar(g, cols, buttons, 1);
@@ -149,27 +141,22 @@ export const PAGES = [
         // Page 3 — Projects
         build(cols, rows, buttons) {
             const g = emptyGrid(cols, rows);
-            const sc = CONFIG.bigTextScale;
-            const TH = 7 * sc;
+            const mid = Math.max(5, Math.floor(rows / 2));
 
             const lines = [
-                '> ls projects',
-                '',
                 '-> github.com/Herculano-Esteves',
             ];
-            const totalH = TH + 2 + lines.length;
-            const top = Math.max(4, Math.floor((rows - totalH) / 2));
 
-            renderBigText(g, 'PROJECTS', centerBigCol('PROJECTS', sc, cols), top, sc, THEME.primary);
+            renderText(g, 'Projects', centerTextCol('Projects', cols), mid - 1, THEME.primary);
 
             lines.forEach((ln, i) => {
                 const color = i === 0 ? THEME.primary : THEME.dim;
                 if (ln.startsWith('-> ')) {
-                    renderButton(g, buttons, ln, centerTextCol(ln, cols), top + TH + 2 + i, () => {
+                    renderButton(g, buttons, ln, centerTextCol(ln, cols), mid + 5 + i, () => {
                         window.open('https://github.com/Herculano-Esteves', '_blank');
                     }, false);
                 } else {
-                    renderText(g, ln, centerTextCol(ln, cols), top + TH + 2 + i, color);
+                    renderText(g, ln, centerTextCol(ln, cols), mid + 5 + i, color);
                 }
             });
 
@@ -181,30 +168,25 @@ export const PAGES = [
         // Page 4 — Contact
         build(cols, rows, buttons) {
             const g = emptyGrid(cols, rows);
-            const sc = CONFIG.bigTextScale;
-            const TH = 7 * sc;
+            const mid = Math.max(5, Math.floor(rows / 2));
 
             const lines = [
-                '> ping herculano',
-                '',
                 'github.com/Herculano-Esteves',
                 '',
                 'Open to collaborations',
                 'and interesting problems.',
             ];
-            const totalH = TH + 2 + lines.length;
-            const top = Math.max(4, Math.floor((rows - totalH) / 2));
 
-            renderBigText(g, 'CONTACT', centerBigCol('CONTACT', sc, cols), top, sc, THEME.primary);
+            renderText(g, 'Contact', centerTextCol('Contact', cols), mid - 1, THEME.primary);
 
             lines.forEach((ln, i) => {
                 const color = i === 0 ? THEME.primary : THEME.dim;
                 if (ln.startsWith('github.com')) {
-                    renderButton(g, buttons, ln, centerTextCol(ln, cols), top + TH + 2 + i, () => {
+                    renderButton(g, buttons, ln, centerTextCol(ln, cols), mid + 5 + i, () => {
                         window.open('https://github.com/Herculano-Esteves', '_blank');
                     }, false);
                 } else {
-                    renderText(g, ln, centerTextCol(ln, cols), top + TH + 2 + i, color);
+                    renderText(g, ln, centerTextCol(ln, cols), mid + 5 + i, color);
                 }
             });
 

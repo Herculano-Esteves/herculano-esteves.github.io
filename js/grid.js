@@ -51,7 +51,7 @@ export function centerBigCol(text, scale, cols) {
 
 /** Return the centred start column for a plain string. */
 export function centerTextCol(text, cols) {
-    return Math.max(0, Math.floor((cols - text.length) / 2));
+    return Math.max(0, Math.ceil((cols - text.length) / 2));
 }
 
 /**
