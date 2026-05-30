@@ -66,7 +66,8 @@ function processMouseMove(e) {
     if (!e) return;
     const { CHAR_W, CHAR_H } = getCharDimensions();
     const { COLS, ROWS } = getGridDimensions();
-    const col = Math.floor(e.clientX / CHAR_W);
+    const leftShift = Math.floor((window.innerWidth - COLS * CHAR_W) / 2);
+    const col = Math.floor((e.clientX - leftShift) / CHAR_W);
     const row = Math.floor(e.clientY / CHAR_H);
 
     const currentPage = getCur();
@@ -99,7 +100,9 @@ function setupMouse() {
     // High-frequency events (e.g. 1000Hz gaming mice) inside the same cell are discarded immediately with zero cost.
     window.addEventListener('mousemove', e => {
         const { CHAR_W, CHAR_H } = getCharDimensions();
-        const col = Math.floor(e.clientX / CHAR_W);
+        const { COLS } = getGridDimensions();
+        const leftShift = Math.floor((window.innerWidth - COLS * CHAR_W) / 2);
+        const col = Math.floor((e.clientX - leftShift) / CHAR_W);
         const row = Math.floor(e.clientY / CHAR_H);
 
         // Early discard if we're in the same cell and not actively dragging selection
@@ -124,7 +127,8 @@ function setupMouse() {
         if (active) { active.action(); return; }
         const { CHAR_W, CHAR_H } = getCharDimensions();
         const { COLS, ROWS } = getGridDimensions();
-        const col = Math.max(0, Math.min(COLS - 1, Math.floor(e.clientX / CHAR_W)));
+        const leftShift = Math.floor((window.innerWidth - COLS * CHAR_W) / 2);
+        const col = Math.max(0, Math.min(COLS - 1, Math.floor((e.clientX - leftShift) / CHAR_W)));
         const row = Math.max(0, Math.min(ROWS - 1, Math.floor(e.clientY / CHAR_H)));
         startSelection(col, row);
     });

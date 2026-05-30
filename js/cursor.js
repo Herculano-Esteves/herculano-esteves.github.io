@@ -4,7 +4,7 @@
  */
 
 import { THEME } from './config.js';
-import { getVisiblePre } from './renderer.js';
+import { getVisiblePre, getCharDimensions, getGridDimensions } from './renderer.js';
 
 
 
@@ -82,10 +82,14 @@ export function updateButtonHover(col, row, pageButtons) {
     if (!buttonEl) return activeHoveredButton;
 
     if (hovered) {
+        const { CHAR_W, CHAR_H } = getCharDimensions();
+        const { COLS } = getGridDimensions();
+        const leftShift = Math.floor((window.innerWidth - COLS * CHAR_W) / 2);
+
         // Resize + reposition the button overlay (one-shot on enter, not per-frame)
         buttonEl.style.width = `${hovered.w * CHAR_W}px`;
         buttonEl.style.height = `${hovered.h * CHAR_H}px`;
-        buttonEl.style.transform = `translate(${hovered.col * CHAR_W}px, ${hovered.row * CHAR_H}px)`;
+        buttonEl.style.transform = `translate(${leftShift + hovered.col * CHAR_W}px, ${hovered.row * CHAR_H}px)`;
     } else {
         buttonEl.style.transform = OFFSCREEN;
     }
