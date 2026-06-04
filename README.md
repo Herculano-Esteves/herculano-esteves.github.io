@@ -1,32 +1,33 @@
 # herculano-esteves.github.io
 
-This is a personal landing page presenting my academic profile and providing quick access links to my other websites and projects, rebuilt using **React + Vite** for modular layouts and clean CSS responsiveness.
+A retro-inspired personal portfolio page built using **React + Vite** and Vanilla CSS, mimicking the aesthetic of a classic monospace terminal.
 
-## Features
-- **Monospace Terminal Aesthetic**: Retains the retro monospace terminal theme, neon green active elements, and glow effects.
-- **Scramble Transition Effects**: Built-in typing/scrambling animations on text elements when switching pages.
-- **Custom Cursor & Interactions**: Retro white pointer cursor with pixel-aligned button hovers.
-- **Fully Responsive**: Swapped cell-by-cell absolute positioning for CSS flexbox and grid layouts, making it fully responsive on mobile.
-- **Native Selection**: Native browser copy/paste and highlight support.
+## Key Features
 
-## How to Run Locally
+- **Monospace Terminal Grid**: Implements a clean, responsive layout designed like a character cell grid.
+- **CRT Monitor Emulation**: Optional CRT screen overlay with scanlines, RGB subpixel mask, and custom analog light bleed/bloom.
+- **Interactive Scrambling**: Real-time typing and scramble animations when navigating between pages.
+- **Global Configuration**: Fully configurable font sizes, layout column widths, CRT resolutions, and scramble parameters via a central configuration file.
+
+## Centralized Configuration
+
+All core style and behavior variables are managed in `src/config.js`:
+- Adjust `totalCols` and `fontSizePx` to customize terminal size.
+- Toggle and customize the CRT simulation with `crtScanlineHeightPx`, `crtApertureWidthPx`, and `crtBloomPx`.
+- Customize scramble speed and character sets.
+
+## Running Locally
 
 1. **Install Dependencies**:
    ```bash
    npm install
    ```
 
-2. **Run Dev Server**:
-   You can run Vite's server directly:
+2. **Start Development Server**:
    ```bash
    npm run dev
    ```
-   Or continue using the legacy Python run script which redirects to Vite automatically:
-   ```bash
-   python3 run.py
-   ```
 
-## Deploying to GitHub Pages
+## Deployment to GitHub Pages
 
-This project is configured with a GitHub Actions workflow (`.github/workflows/deploy.yml`). 
-Whenever you push changes to your default branch (`main` or `master`), GitHub will automatically compile the React application and deploy the static assets to GitHub Pages.
+The repository contains a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically compiles the production build and deploys the assets to GitHub Pages on every push to `main`.
