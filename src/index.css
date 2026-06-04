@@ -1,0 +1,315 @@
+/* ── Theme Variables ── */
+:root {
+    --bg: #0e0e0e;
+    --primary: #ffffff;
+    --dim: #888888;
+    --muted: #333333;
+    --crt-opacity: 1.0;
+    --crt-bloom-px: 0.4;
+
+    /* Terminal Grid Variables */
+    --total-cols: 70;
+    --font-size-px: 16;
+    
+    /* Calculate dynamic uniform font size based on pixel configuration. 
+       We use the exact pixel size, but scale it down on small screens to prevent overflow. */
+    --terminal-font-size: min(calc(var(--font-size-px) * 1px), calc(95vw / (var(--total-cols) * 0.6)));
+
+    /* Derived colors */
+    --primary-border: color-mix(in srgb, var(--primary) 30%, transparent);
+    --primary-bg-hover: color-mix(in srgb, var(--primary) 8%, transparent);
+    --glow: 0 0 10px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* ── Reset & Global Typography ── */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Force every single text element to have a uniform terminal font size defined by the lines */
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+button,
+a,
+span,
+div,
+input,
+select,
+textarea {
+    font-size: var(--terminal-font-size) !important;
+    font-family: 'Share Tech Mono', 'Courier New', monospace !important;
+    font-weight: normal !important;
+    line-height: 1 !important; /* Exactly 1 character cell tall, like a terminal grid */
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--primary);
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+/* ── Custom Text Selection ── */
+::selection {
+    background-color: var(--primary);
+    color: var(--bg);
+}
+::-moz-selection {
+    background-color: var(--primary);
+    color: var(--bg);
+}
+
+/* ── Custom SVG Cursor (rendered natively by the browser for 0% CPU load) ── */
+html, body, a, button, [role="button"], input, select, textarea {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='19' viewBox='0 0 12 19' shape-rendering='crispEdges'><path fill='white' stroke='black' stroke-width='1' d='M0,0 L0,15 L3.5,11.5 L6.5,16.5 L8,15.5 L5,10.5 L9.5,10.5 Z' /></svg>") 0 0, auto !important;
+}
+
+/* ── Screen CRT / Terminal Overlay ── */
+.terminal-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.75rem 1.5rem; /* Reduced top padding to move content up */
+    overflow: hidden;
+    z-index: 1;
+    filter: blur(calc(var(--crt-bloom-px) * 1px));
+}
+
+/* Subtle CRT screen scanlines effect */
+.terminal-screen::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: 
+        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.18), rgba(0, 255, 0, 0.08), rgba(0, 0, 255, 0.18));
+    z-index: 99999;
+    background-size: 100% calc(var(--crt-scanline-height-px) * 1px), calc(var(--crt-aperture-width-px) * 1px) 100%;
+    pointer-events: none;
+    opacity: var(--crt-opacity);
+}
+
+/* ── Navigation Header (Navbar) ── */
+.navbar {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 2rem; /* Exactly 2 blank terminal lines */
+    z-index: 10;
+    flex-wrap: nowrap; /* Keep aligned on a single line */
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.nav-item:hover {
+    color: var(--bg) !important;
+    background-color: var(--primary) !important;
+}
+.nav-item:hover * {
+    color: var(--bg) !important;
+    background-color: transparent !important;
+}
+
+.nav-item.active {
+    color: var(--bg);
+    background-color: var(--primary);
+}
+
+/* ── Main Content Container ── */
+.content-container {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* ── Pages Layout ── */
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Home Page */
+.home-name {
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem; /* 1 blank terminal line */
+    text-shadow: var(--glow);
+}
+
+.home-subtitle {
+    margin-bottom: 2rem; /* 2 blank terminal lines */
+}
+
+.home-subtitle .role {
+    color: var(--primary);
+}
+
+.home-subtitle .school {
+    color: var(--dim);
+}
+
+.social-links {
+    margin-bottom: 2rem; /* 2 blank terminal lines */
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    text-decoration: underline;
+    padding: 0;
+}
+
+.btn-link:hover {
+    color: var(--bg) !important;
+    background-color: var(--primary) !important;
+    text-decoration: none !important;
+}
+.btn-link:hover * {
+    color: var(--bg) !important;
+    background-color: transparent !important;
+    text-decoration: none !important;
+}
+
+/* Featured Project Block */
+.featured-project {
+    border: none;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: inherit;
+}
+
+.featured-project:hover {
+    color: var(--bg) !important;
+    background-color: var(--primary) !important;
+    text-decoration: none !important;
+}
+.featured-project:hover * {
+    color: var(--bg) !important;
+    background-color: transparent !important;
+    text-decoration: none !important;
+}
+
+.project-label {
+    color: var(--dim);
+}
+
+.project-title {
+    color: var(--primary);
+}
+
+.project-desc {
+    color: var(--dim);
+}
+
+/* Generic Retro Page Styles */
+.page-title {
+    margin-bottom: 1rem; /* 1 blank terminal line */
+    color: var(--primary);
+    letter-spacing: 0.05em;
+    text-shadow: var(--glow);
+}
+
+.page-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* No gaps between lines of text, matching terminal row stack */
+    width: 100%;
+    align-items: center;
+}
+
+.text-line.dim {
+    color: var(--dim);
+}
+
+/* ── Toast Notification ── */
+#toast {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    letter-spacing: 0.25em;
+    color: var(--bg);
+    background: var(--primary);
+    padding: 0.35rem 1.2rem;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: var(--glow);
+}
+
+#toast.show {
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .terminal-screen {
+        padding: 1rem;
+    }
+    .navbar {
+        gap: 0.5rem;
+    }
+    .crt-switch-container {
+        position: static;
+        margin-top: 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+/* CRT Switch Floating Container */
+.crt-switch-container {
+    position: fixed;
+    bottom: 1rem;
+    right: 1.5rem;
+    z-index: 1000;
+}
+.crt-switch-container .btn-link {
+    font-size: max(12px, calc(var(--terminal-font-size) * 0.75));
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
