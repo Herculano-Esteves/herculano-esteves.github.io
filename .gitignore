@@ -29,3 +29,10 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Local Portable Node & NPM
+/.node/
+/.npm_cache/
+
+# Local Python Venv
+/.venv/

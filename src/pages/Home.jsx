@@ -9,15 +9,19 @@ export function Home() {
     window.open('https://github.com/Herculano-Esteves', '_blank', 'noopener,noreferrer');
   };
 
+  const handleLinkedinClick = (e) => {
+    e.stopPropagation();
+    window.open('https://www.linkedin.com/in/pedro-herculano-esteves-204573354/', '_blank', 'noopener,noreferrer');
+  };
+
   const handleProjectClick = () => {
     window.open('https://herculano-esteves.github.io/examPreparation/', '_blank', 'noopener,noreferrer');
   };
 
-  // We define total cols to make positioning precise
   const COLS = CONFIG.totalCols;
-  const mid = 7; // Fixed baseline row for name
-  const rowSoftware = 12;
-  const rowGithub = 14;
+  const mid = 6; // Fixed baseline row for name
+  const rowDegree = 12;
+  const rowSocials = 14;
   const rowProject = 17;
 
   return (
@@ -39,28 +43,27 @@ export function Home() {
           </Center>
         </Row>
 
-        {/* Subtitle Line */}
-        <Row y={rowSoftware}>
-          {/* centerCol of 70 is 35. software_engineer starts at 35 - 19 = 16 */}
-          <Col x={16}>
-            <span className="role">
-              <ScrambleText text="software_engineer" duration={200} delay={150} />
+        {/* Degree & School Subtitle */}
+        <Row y={rowDegree}>
+          <Center>
+            <span className="school" style={{ color: 'var(--primary)' }}>
+              <ScrambleText text="B.Sc. in Software Engineering @ University of Minho" duration={250} delay={180} />
             </span>
-          </Col>
-          {/* @ University of Minho starts at 35 */}
-          <Col x={35}>
-            <span className="school">
-              <ScrambleText text="@ University of Minho" duration={250} delay={220} />
-            </span>
-          </Col>
+          </Center>
         </Row>
 
-        {/* Social Links */}
-        <Row y={rowGithub}>
+        {/* Socials Bar: github | linkedin */}
+        <Row y={rowSocials}>
           <Center>
-            <button onClick={handleGithubClick} className="btn-link" type="button">
-              <ScrambleText text="github" duration={150} delay={300} />
-            </button>
+            <div style={{ display: 'flex', gap: '2ch', alignItems: 'center' }}>
+              <button onClick={handleGithubClick} className="btn-link" type="button">
+                <ScrambleText text="github" duration={150} delay={250} />
+              </button>
+              <span style={{ color: 'var(--muted)' }}>|</span>
+              <button onClick={handleLinkedinClick} className="btn-link" type="button">
+                <ScrambleText text="linkedin" duration={150} delay={280} />
+              </button>
+            </div>
           </Center>
         </Row>
 
@@ -69,7 +72,7 @@ export function Home() {
           {/* Centered block of width 48 starts at (70 - 48) / 2 = 11 */}
           <Col x={11}>
             <div className="project-label">
-              <ScrambleText text="featured project:" duration={150} delay={350} />
+              <ScrambleText text="featured project:" duration={150} delay={330} />
             </div>
           </Col>
         </Row>
@@ -79,10 +82,10 @@ export function Home() {
           <Col x={11}>
             <button onClick={handleProjectClick} className="featured-project" type="button" style={{ width: '48ch' }}>
               <div className="project-title">
-                <ScrambleText text="| Exam Preparation" duration={200} delay={400} />
+                <ScrambleText text="| Exam Preparation" duration={200} delay={380} />
               </div>
               <div className="project-desc">
-                <ScrambleText text="| Software engineering exam preparation platform" duration={250} delay={450} />
+                <ScrambleText text="| Software engineering exam preparation platform" duration={250} delay={430} />
               </div>
             </button>
           </Col>

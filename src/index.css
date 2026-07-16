@@ -10,7 +10,7 @@
     /* Terminal Grid Variables */
     --total-cols: 70;
     --font-size-px: 16;
-    
+
     /* Calculate dynamic uniform font size based on pixel configuration. 
        We use the exact pixel size, but scale it down on small screens to prevent overflow. */
     --terminal-font-size: min(calc(var(--font-size-px) * 1px), calc(95vw / (var(--total-cols) * 0.6)));
@@ -28,6 +28,35 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* ── SimpleBar Custom Scrollbar Styles (Chrome, Firefox, Safari, Edge) ── */
+.simplebar-track.simplebar-vertical {
+    background-color: #0e0e0e !important;
+    width: 8px !important;
+}
+
+.simplebar-track.simplebar-horizontal {
+    background-color: #0e0e0e !important;
+    height: 8px !important;
+}
+
+.simplebar-scrollbar::before {
+    background: #333333 !important;
+    border-radius: 3px !important;
+    left: 1px !important;
+    right: 1px !important;
+    opacity: 1 !important;
+    transition: background 0.2s ease !important;
+}
+
+.simplebar-scrollbar:hover::before {
+    background: #888888 !important;
+}
+
+/* Force scrollbar to be permanently visible for terminal styling consistency */
+.simplebar-scrollbar {
+    opacity: 1 !important;
 }
 
 /* Force every single text element to have a uniform terminal font size defined by the lines */
@@ -50,14 +79,15 @@ textarea {
     font-size: var(--terminal-font-size) !important;
     font-family: 'Share Tech Mono', 'Courier New', monospace !important;
     font-weight: normal !important;
-    line-height: 1 !important; /* Exactly 1 character cell tall, like a terminal grid */
+    line-height: 1 !important;
+    /* Exactly 1 character cell tall, like a terminal grid */
 }
 
 html,
 body {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: hidden !important;
     background-color: var(--bg);
     color: var(--primary);
     user-select: text;
@@ -69,26 +99,35 @@ body {
     background-color: var(--primary);
     color: var(--bg);
 }
+
 ::-moz-selection {
     background-color: var(--primary);
     color: var(--bg);
 }
 
 /* ── Custom SVG Cursor (rendered natively by the browser for 0% CPU load) ── */
-html, body, a, button, [role="button"], input, select, textarea {
+html,
+body,
+a,
+button,
+[role="button"],
+input,
+select,
+textarea {
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='19' viewBox='0 0 12 19' shape-rendering='crispEdges'><path fill='white' stroke='black' stroke-width='1' d='M0,0 L0,15 L3.5,11.5 L6.5,16.5 L8,15.5 L5,10.5 L9.5,10.5 Z' /></svg>") 0 0, auto !important;
 }
 
 /* ── Screen CRT / Terminal Overlay ── */
 .terminal-screen {
-    position: fixed;
-    inset: 0;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 0.75rem 1.5rem; /* Reduced top padding to move content up */
-    overflow: hidden;
+    padding: 2rem 1.5rem;
+    overflow: visible;
     z-index: 1;
     filter: blur(calc(var(--crt-bloom-px) * 1px));
 }
@@ -97,9 +136,12 @@ html, body, a, button, [role="button"], input, select, textarea {
 .terminal-screen::before {
     content: " ";
     display: block;
-    position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: 
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background:
         linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1) 50%),
         linear-gradient(90deg, rgba(255, 0, 0, 0.18), rgba(0, 255, 0, 0.08), rgba(0, 0, 255, 0.18));
     z-index: 99999;
@@ -116,9 +158,11 @@ html, body, a, button, [role="button"], input, select, textarea {
     justify-content: center;
     gap: 1.25rem;
     margin-top: 0.25rem;
-    margin-bottom: 2rem; /* Exactly 2 blank terminal lines */
+    margin-bottom: 2rem;
+    /* Exactly 2 blank terminal lines */
     z-index: 10;
-    flex-wrap: nowrap; /* Keep aligned on a single line */
+    flex-wrap: nowrap;
+    /* Keep aligned on a single line */
 }
 
 .nav-item {
@@ -134,6 +178,7 @@ html, body, a, button, [role="button"], input, select, textarea {
     color: var(--bg) !important;
     background-color: var(--primary) !important;
 }
+
 .nav-item:hover * {
     color: var(--bg) !important;
     background-color: transparent !important;
@@ -150,10 +195,11 @@ html, body, a, button, [role="button"], input, select, textarea {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
     margin-bottom: 2rem;
+    gap: 4rem;
 }
 
 /* ── Pages Layout ── */
@@ -164,15 +210,26 @@ html, body, a, button, [role="button"], input, select, textarea {
     width: 100%;
 }
 
+/* Make the first section (Home) occupy the full initial viewport to center Herculano Esteves */
+.content-container> :first-child {
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 /* Home Page */
 .home-name {
     letter-spacing: -0.02em;
-    margin-bottom: 1rem; /* 1 blank terminal line */
+    margin-bottom: 1rem;
+    /* 1 blank terminal line */
     text-shadow: var(--glow);
 }
 
 .home-subtitle {
-    margin-bottom: 2rem; /* 2 blank terminal lines */
+    margin-bottom: 2rem;
+    /* 2 blank terminal lines */
 }
 
 .home-subtitle .role {
@@ -184,7 +241,8 @@ html, body, a, button, [role="button"], input, select, textarea {
 }
 
 .social-links {
-    margin-bottom: 2rem; /* 2 blank terminal lines */
+    margin-bottom: 2rem;
+    /* 2 blank terminal lines */
 }
 
 .btn-link {
@@ -200,6 +258,7 @@ html, body, a, button, [role="button"], input, select, textarea {
     background-color: var(--primary) !important;
     text-decoration: none !important;
 }
+
 .btn-link:hover * {
     color: var(--bg) !important;
     background-color: transparent !important;
@@ -224,6 +283,7 @@ html, body, a, button, [role="button"], input, select, textarea {
     background-color: var(--primary) !important;
     text-decoration: none !important;
 }
+
 .featured-project:hover * {
     color: var(--bg) !important;
     background-color: transparent !important;
@@ -240,11 +300,16 @@ html, body, a, button, [role="button"], input, select, textarea {
 
 .project-desc {
     color: var(--dim);
+    line-height: 1.4 !important;
+    white-space: normal;
+    text-align: left;
+    margin-bottom: 1rem;
 }
 
 /* Generic Retro Page Styles */
 .page-title {
-    margin-bottom: 1rem; /* 1 blank terminal line */
+    margin-bottom: 1rem;
+    /* 1 blank terminal line */
     color: var(--primary);
     letter-spacing: 0.05em;
     text-shadow: var(--glow);
@@ -253,7 +318,8 @@ html, body, a, button, [role="button"], input, select, textarea {
 .page-body {
     display: flex;
     flex-direction: column;
-    gap: 0; /* No gaps between lines of text, matching terminal row stack */
+    gap: 0;
+    /* No gaps between lines of text, matching terminal row stack */
     width: 100%;
     align-items: center;
 }
@@ -288,9 +354,11 @@ html, body, a, button, [role="button"], input, select, textarea {
     .terminal-screen {
         padding: 1rem;
     }
+
     .navbar {
         gap: 0.5rem;
     }
+
     .crt-switch-container {
         position: static;
         margin-top: 1rem;
@@ -307,9 +375,366 @@ html, body, a, button, [role="button"], input, select, textarea {
     right: 1.5rem;
     z-index: 1000;
 }
+
 .crt-switch-container .btn-link {
     font-size: max(12px, calc(var(--terminal-font-size) * 0.75));
     text-decoration: none;
     letter-spacing: 0.05em;
     cursor: pointer;
 }
+
+/* ── Discrete Assets Button & Gallery Styles ── */
+.btn-assets-container {
+    margin-top: 4rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.btn-assets {
+    background: none;
+    border: none;
+    color: var(--dim) !important;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    font-size: 0.85rem !important;
+    text-transform: lowercase;
+}
+
+.btn-assets:hover {
+    color: var(--primary) !important;
+    text-decoration: underline;
+}
+
+/* Assets Gallery Fullscreen Modal */
+.assets-gallery-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: var(--bg);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.5rem;
+    overflow-y: auto;
+}
+
+.assets-gallery-container {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.assets-gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--dim);
+    padding-bottom: 1rem;
+    width: 100%;
+}
+
+.assets-gallery-title {
+    font-size: 1.25rem !important;
+    color: var(--primary);
+    text-transform: uppercase;
+}
+
+.btn-close-gallery {
+    background: none;
+    border: none;
+    color: var(--dim) !important;
+    cursor: pointer;
+}
+
+.btn-close-gallery:hover {
+    color: var(--primary) !important;
+}
+
+.assets-section-title {
+    color: var(--primary);
+    border-bottom: 1px solid var(--muted);
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+/* Asset Preview Cards */
+.asset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.asset-card {
+    border: 1px solid var(--muted);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.asset-image-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--muted);
+    overflow: hidden;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.asset-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.asset-info {
+    color: var(--dim);
+    font-size: 0.75rem !important;
+}
+
+/* Image Layout Showcase Styles */
+.layout-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.layout-selector {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.layout-btn {
+    background: none;
+    border: 1px solid var(--muted);
+    color: var(--dim) !important;
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+}
+
+.layout-btn:hover,
+.layout-btn.active {
+    border-color: var(--primary);
+    color: var(--primary) !important;
+}
+
+.layout-preview-box {
+    border: 1px dashed var(--dim);
+    padding: 1.5rem;
+    background: var(--bg);
+}
+
+/* ── Project Image Layouts (Used in Projects.jsx & AssetsGallery.jsx) ── */
+.project-images-container {
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Layout Model: Single */
+.layout-single {
+    width: 100%;
+}
+
+.layout-single .project-img-item {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--muted);
+    overflow: hidden;
+}
+
+/* Layout Model: Side-by-side */
+.layout-side-by-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+
+.layout-side-by-side .project-img-item {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--muted);
+    overflow: hidden;
+}
+
+/* Layout Model: Three-columns */
+.layout-three-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+
+.layout-three-columns .project-img-item {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--muted);
+    overflow: hidden;
+}
+
+/* Layout Model: Grid */
+.layout-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+    width: 100%;
+}
+
+.layout-grid-4 .project-img-item {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--muted);
+    overflow: hidden;
+}
+
+/* Layout Model: Carousel */
+.layout-carousel {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--muted);
+    overflow: hidden;
+}
+
+.carousel-slide {
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-controls {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.25rem 1rem;
+    margin: 0 auto;
+    width: fit-content;
+    border: 1px solid var(--muted);
+    z-index: 5;
+}
+
+.carousel-btn {
+    background: none;
+    border: none;
+    color: var(--primary) !important;
+    cursor: pointer;
+    font-weight: bold !important;
+}
+
+.carousel-btn:hover {
+    color: var(--dim) !important;
+}
+
+.carousel-border-fix {
+    border: none !important;
+}
+
+.carousel-indicator {
+    color: var(--dim);
+    font-size: 0.8rem !important;
+}
+
+.project-img-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: filter 0.3s ease;
+}
+
+.project-img-item {
+    cursor: zoom-in;
+}
+
+.project-img-item:hover .project-img-element {
+    filter: brightness(1.2);
+}
+
+/* ── Lightbox Click-to-Zoom Overlay ── */
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 25000; /* above simplebar and modal overlays */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+    padding: 2rem;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border: 2px solid var(--primary);
+    box-shadow: var(--glow);
+}
+
+.lightbox-close {
+    background: none;
+    border: none;
+    color: var(--dim) !important;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+}
+
+.lightbox-close:hover {
+    color: var(--primary) !important;
+    text-decoration: underline;
+}
+
+/* ── Portrait Aspect Ratio Overrides (For Mobile Screenshots) ── */
+.portrait-ratio .project-img-item {
+    aspect-ratio: 9 / 16 !important;
+}
+
+.portrait-ratio.layout-carousel {
+    aspect-ratio: 9 / 16 !important;
+    max-width: 220px;
+    margin: 0 auto;
+}
+
+.portrait-ratio.layout-single {
+    max-width: 220px;
+    margin: 0 auto;
+}
+
+.portrait-ratio.layout-single .project-img-item {
+    aspect-ratio: 9 / 16 !important;
+}
+
+.portrait-ratio.layout-side-by-side {
+    max-width: 450px;
+    margin: 0 auto;
+}
