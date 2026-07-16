@@ -6,7 +6,7 @@ import SimpleBar from 'simplebar-react';
 
 /**
  * AssetsGallery is an overlay component that previews the raw static image assets
- * and allows testing the 4 layout options (Single, Side-by-side, Grid, Carousel) interactively.
+ * and allows testing the 5 layout options (Single, Side-by-side, Three-columns, Grid, Carousel) interactively.
  * Enwrapped in SimpleBar to provide customized scrollbars on all browsers.
  */
 export function AssetsGallery({ onClose }) {

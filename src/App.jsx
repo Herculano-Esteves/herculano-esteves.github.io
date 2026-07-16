@@ -19,7 +19,14 @@ if (typeof document !== 'undefined') {
 }
 
 export default function App() {
-  const [showAssets, setShowAssets] = useState(false);
+  // Secret backdoor: check URL query params on mount (e.g. ?assets=true)
+  const [showAssets, setShowAssets] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('assets') === 'true';
+    }
+    return false;
+  });
 
   // Disable CRT styles on startup (default mode, since button is removed)
   useEffect(() => {
@@ -39,18 +46,11 @@ export default function App() {
           <main className="content-container">
             <Home />
             <Projects />
-
-            {/* Discrete Design System Button at the bottom of the page */}
-            <div className="btn-assets-container">
-              <button onClick={() => setShowAssets(true)} className="btn-assets" type="button">
-                [ design-system ]
-              </button>
-            </div>
           </main>
         </div>
       </SimpleBar>
 
-      {/* Assets Gallery Modal Overlay - Rendered outside to avoid CSS filter containing block bug */}
+      {/* Secret Design System Modal Overlay - Triggered via ?assets=true URL parameter */}
       {showAssets && <AssetsGallery onClose={() => setShowAssets(false)} />}
     </>
   );
