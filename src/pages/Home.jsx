@@ -3,7 +3,7 @@ import { TerminalGrid, Row, Col, Center } from '../components/TerminalGrid';
 import { ScrambleText } from '../components/ScrambleText';
 import { CONFIG } from '../config';
 
-export function Home() {
+export function Home({ scrolled = false }) {
   const handleGithubClick = (e) => {
     e.stopPropagation();
     window.open('https://github.com/Herculano-Esteves', '_blank', 'noopener,noreferrer');
@@ -25,7 +25,7 @@ export function Home() {
   const rowProject = 17;
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper" style={{ position: 'relative' }}>
       <TerminalGrid cols={COLS}>
         {/* Name Header */}
         <Row y={mid - 1}>
@@ -91,6 +91,16 @@ export function Home() {
           </Col>
         </Row>
       </TerminalGrid>
+
+      {/* Visual Scroll Down Indicator */}
+      <div className={`scroll-indicator ${scrolled ? 'hidden' : ''}`}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem' }}>
+          <span>
+            <ScrambleText text="scroll" duration={200} delay={500} />
+          </span>
+          <span style={{ fontSize: '1.25em', lineHeight: 1 }}>↓</span>
+        </div>
+      </div>
     </div>
   );
 }

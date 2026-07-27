@@ -59,6 +59,11 @@
     opacity: 1 !important;
 }
 
+/* Enable smooth momentum touch scrolling on mobile iOS devices */
+.simplebar-content-wrapper {
+    -webkit-overflow-scrolling: touch !important;
+}
+
 /* Force every single text element to have a uniform terminal font size defined by the lines */
 html,
 body,
@@ -122,11 +127,12 @@ textarea {
     position: relative;
     width: 100%;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 2rem 1.5rem;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
     overflow: visible;
     z-index: 1;
     filter: blur(calc(var(--crt-bloom-px) * 1px));
@@ -265,6 +271,26 @@ textarea {
     text-decoration: none !important;
 }
 
+/* ── Scroll Indicator (First Fold Prompt) ── */
+.scroll-indicator {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    opacity: 1;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    user-select: none;
+}
+
+.scroll-indicator.hidden {
+    opacity: 0 !important;
+    transform: translate(-50%, 12px) !important;
+}
+
 /* Featured Project Block */
 .featured-project {
     border: none;
@@ -304,6 +330,11 @@ textarea {
     white-space: normal;
     text-align: left;
     margin-bottom: 1rem;
+}
+
+.featured-project .project-desc {
+    margin-bottom: 0;
+    line-height: 1 !important;
 }
 
 /* Generic Retro Page Styles */

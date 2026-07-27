@@ -28,7 +28,7 @@ export function AssetsGallery({ onClose }) {
 
   return (
     <div className="assets-gallery-overlay" style={{ overflow: 'hidden', padding: 0 }}>
-      <SimpleBar style={{ maxHeight: '100vh', width: '100%' }}>
+      <SimpleBar style={{ maxHeight: '100dvh', width: '100%' }}>
         <div className="assets-gallery-container" style={{ margin: '0 auto', padding: '3rem 1.5rem' }}>
           
           {/* Header */}

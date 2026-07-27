@@ -59,11 +59,11 @@ const PROJECTS_DATA = [
 ];
 
 // Project Card Subcomponent to handle individual Media Toggles (Video vs. Images)
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, isLast }) {
   const [showVideo, setShowVideo] = useState(false);
 
   return (
-    <div style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '2rem', width: '100%' }}>
+    <div style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: isLast ? '0.5rem' : '2rem', width: '100%' }}>
       
       {/* Title, Media Toggle & Link */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%' }}>
@@ -138,7 +138,7 @@ function ProjectCard({ project, index }) {
 
 export function Projects() {
   return (
-    <div className="page-wrapper" style={{ width: 'calc(var(--total-cols) * 1ch)', margin: '0 auto' }}>
+    <div className="page-wrapper" style={{ width: 'calc(var(--total-cols) * 1ch)', margin: '4rem auto 0 auto' }}>
       
       {/* Title */}
       <div style={{ textAlign: 'center', marginBottom: '2rem', width: '100%' }}>
@@ -150,7 +150,12 @@ export function Projects() {
       {/* Projects List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', width: '100%' }}>
         {PROJECTS_DATA.map((project, index) => (
-          <ProjectCard key={index} project={project} index={index} />
+          <ProjectCard 
+            key={index} 
+            project={project} 
+            index={index} 
+            isLast={index === PROJECTS_DATA.length - 1} 
+          />
         ))}
       </div>
     </div>

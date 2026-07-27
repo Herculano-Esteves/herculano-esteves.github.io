@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Home } from './pages/Home';
+import { Education } from './pages/Education';
 import { Projects } from './pages/Projects';
 import { AssetsGallery } from './components/AssetsGallery';
 import { CONFIG } from './config';
@@ -19,6 +20,9 @@ if (typeof document !== 'undefined') {
 }
 
 export default function App() {
+  const [scrolled, setScrolled] = useState(false);
+  const simpleBarRef = useRef(null);
+
   // Secret backdoor: check URL query params on mount (e.g. ?assets=true)
   const [showAssets, setShowAssets] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -38,13 +42,36 @@ export default function App() {
     }
   }, []);
 
+  // Listen to scroll events on SimpleBar content wrapper
+  useEffect(() => {
+    const scrollEl = simpleBarRef.current?.getScrollElement();
+
+    const checkScroll = () => {
+      const st = scrollEl ? scrollEl.scrollTop : (window.scrollY || document.documentElement.scrollTop);
+      setScrolled(st > 40);
+    };
+
+    if (scrollEl) {
+      scrollEl.addEventListener('scroll', checkScroll, { passive: true });
+    }
+    window.addEventListener('scroll', checkScroll, { passive: true });
+
+    return () => {
+      if (scrollEl) {
+        scrollEl.removeEventListener('scroll', checkScroll);
+      }
+      window.removeEventListener('scroll', checkScroll);
+    };
+  }, []);
+
   return (
     <>
-      <SimpleBar style={{ maxHeight: '100vh', width: '100%' }}>
+      <SimpleBar ref={simpleBarRef} style={{ maxHeight: '100dvh', width: '100%' }}>
         <div className="terminal-screen">
           {/* Dynamic Content Container - Stacking all sections vertically */}
           <main className="content-container">
-            <Home />
+            <Home scrolled={scrolled} />
+            <Education />
             <Projects />
           </main>
         </div>
