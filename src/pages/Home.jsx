@@ -31,7 +31,7 @@ export function Home({ scrolled = false }) {
         <Row y={mid - 1}>
           <Center>
             <h1 className="home-name">
-              <ScrambleText text="Herculano" duration={250} delay={0} />
+              <ScrambleText text="Pedro" duration={250} delay={0} />
             </h1>
           </Center>
         </Row>
@@ -52,17 +52,21 @@ export function Home({ scrolled = false }) {
           </Center>
         </Row>
 
-        {/* Socials Bar: github | linkedin */}
+        {/* Socials Bar: github | linkedin (with pipe bar centered on vertical axis) */}
         <Row y={rowSocials}>
           <Center>
-            <div style={{ display: 'flex', gap: '2ch', alignItems: 'center' }}>
-              <button onClick={handleGithubClick} className="btn-link" type="button">
-                <ScrambleText text="github" duration={150} delay={250} />
-              </button>
+            <div style={{ display: 'flex', width: '24ch', alignItems: 'center' }}>
+              <div style={{ flex: 1, textAlign: 'right', paddingRight: '1ch' }}>
+                <button onClick={handleGithubClick} className="btn-link" type="button">
+                  <ScrambleText text="github" duration={150} delay={250} />
+                </button>
+              </div>
               <span style={{ color: 'var(--muted)' }}>|</span>
-              <button onClick={handleLinkedinClick} className="btn-link" type="button">
-                <ScrambleText text="linkedin" duration={150} delay={280} />
-              </button>
+              <div style={{ flex: 1, textAlign: 'left', paddingLeft: '1ch' }}>
+                <button onClick={handleLinkedinClick} className="btn-link" type="button">
+                  <ScrambleText text="linkedin" duration={150} delay={280} />
+                </button>
+              </div>
             </div>
           </Center>
         </Row>

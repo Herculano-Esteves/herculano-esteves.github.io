@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Home } from './pages/Home';
 import { Education } from './pages/Education';
+import { Research } from './pages/Research';
 import { Projects } from './pages/Projects';
 import { AssetsGallery } from './components/AssetsGallery';
 import { CONFIG } from './config';
@@ -12,8 +13,10 @@ if (typeof document !== 'undefined') {
   const root = document.documentElement;
   root.style.setProperty('--bg', CONFIG.theme.bg);
   root.style.setProperty('--primary', CONFIG.theme.primary);
+  root.style.setProperty('--secondary', CONFIG.theme.secondary);
   root.style.setProperty('--dim', CONFIG.theme.dim);
   root.style.setProperty('--muted', CONFIG.theme.muted);
+  root.style.setProperty('--border', CONFIG.theme.border);
   root.style.setProperty('--crt-scanline-height-px', CONFIG.crtScanlineHeightPx);
   root.style.setProperty('--crt-aperture-width-px', CONFIG.crtApertureWidthPx);
   root.style.setProperty('--total-cols', CONFIG.totalCols);
@@ -72,6 +75,7 @@ export default function App() {
           <main className="content-container">
             <Home scrolled={scrolled} />
             <Education />
+            <Research />
             <Projects />
           </main>
         </div>

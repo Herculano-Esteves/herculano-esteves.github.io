@@ -2,8 +2,10 @@
 :root {
     --bg: #0e0e0e;
     --primary: #ffffff;
-    --dim: #888888;
-    --muted: #333333;
+    --secondary: #cccccc;
+    --dim: #aaaaaa;
+    --muted: #444444;
+    --border: #333333;
     --crt-opacity: 1.0;
     --crt-bloom-px: 0.4;
 
@@ -696,6 +698,20 @@ textarea {
 
 .project-img-item:hover .project-img-element {
     filter: brightness(1.2);
+}
+
+/* ── Devlog Reader Fullscreen Overlay ── */
+.devlog-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--bg);
+    z-index: 25000;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ── Lightbox Click-to-Zoom Overlay ── */

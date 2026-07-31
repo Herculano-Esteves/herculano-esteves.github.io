@@ -1,17 +1,142 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herculano Esteves</title>
-    <meta name="description" content="Herculano Esteves — Software Engineering">
+    <title>Pedro Esteves — Software Engineering</title>
+    <meta name="description" content="Pedro Esteves — B.Sc. in Software Engineering Student at University of Minho. Portfolio featuring projects in React, Python, Go, and Mobile Development.">
+    <meta name="author" content="Pedro Esteves">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- JSON-LD Structured Data for AI & Search Engine Crawlers -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Pedro Esteves",
+      "alternateName": ["Pedro Herculano Esteves", "Herculano Esteves"],
+      "url": "https://herculano-esteves.github.io/",
+      "sameAs": [
+        "https://github.com/Herculano-Esteves",
+        "https://www.linkedin.com/in/pedro-herculano-esteves-204573354/"
+      ],
+      "jobTitle": "Software Engineer",
+      "worksFor": {
+        "@type": "EducationalOrganization",
+        "name": "University of Minho"
+      },
+      "alumniOf": {
+        "@type": "EducationalOrganization",
+        "name": "University of Minho",
+        "location": "Braga, Portugal"
+      },
+      "knowsAbout": ["Software Engineering", "React", "Python", "Go", "FastAPI", "React Native", "Expo", "OpenStreetMap", "Algorithms", "AI Simulation"]
+    }
+    </script>
 </head>
 
 <body>
+
+    <!-- Hidden Semantic Content for AI Web Crawlers and LLM Summarizers (Exact Verbatim Website Content) -->
+    <div style="display: none;" aria-hidden="true" id="ai-crawler-context">
+        <h1>Pedro Esteves</h1>
+        <p>B.Sc. in Software Engineering @ University of Minho</p>
+        
+        <nav>
+            <ul>
+                <li><strong>GitHub:</strong> https://github.com/Herculano-Esteves</li>
+                <li><strong>LinkedIn:</strong> https://www.linkedin.com/in/pedro-herculano-esteves-204573354/</li>
+            </ul>
+        </nav>
+
+        <section>
+            <h2>Education</h2>
+            <article>
+                <h3>Bachelor's in Software Engineering</h3>
+                <p><strong>Period:</strong> Sep 2023 - Jun 2026</p>
+                <p><strong>Institution:</strong> University of Minho | Braga, Portugal</p>
+            </article>
+        </section>
+
+        <section>
+            <h2>Active Research / Devlogs</h2>
+            <article>
+                <h3>Planet Game Engine [active]</h3>
+                <p><strong>Period:</strong> 2026 - Present</p>
+                <p><strong>Tags:</strong> #C++, #OpenGL 3.3+, #Jolt Physics</p>
+                <p><strong>Summary:</strong> A high-performance C++ game engine engineered for universe & planet simulations, featuring double-precision Jolt Physics, OpenGL rendering, and an EnTT Entity Component System.</p>
+                
+                <h4>Devlog Content:</h4>
+                <div>
+                    <h5>1. Project Overview & Objectives</h5>
+                    <p>Planet Game Engine is a high-performance C++ game engine specifically designed for universe-scale dynamic simulations. The primary engineering goal is to support vast coordinate spaces (planet-scale mechanics) without precision loss while maintaining high-frame-rate rendering and physics simulation.</p>
+                    <p>Key architectural highlights:</p>
+                    <ul>
+                        <li><strong>Double-Precision World Coordinates:</strong> Configured with double-precision floating-point scalars to eliminate precision jitter.</li>
+                        <li><strong>Data-Oriented Entity Component System (ECS):</strong> Utilizing EnTT for cache-line efficient component iteration.</li>
+                        <li><strong>Rigid Body Dynamics:</strong> Integrated Jolt Physics with AVX2 SIMD acceleration.</li>
+                    </ul>
+
+                    <h5>2. Technical Stack & Core Modules</h5>
+                    <h6>A. Physics & Dynamics Module</h6>
+                    <ul>
+                        <li><strong>Engine Integration:</strong> Integrated Jolt Physics with custom double-precision bindings.</li>
+                        <li><strong>SIMD Acceleration:</strong> CPU vectorization using AVX2 instruction sets for rigid body contacts and broadphase queries.</li>
+                    </ul>
+
+                    <h6>B. Graphics & Rendering Engine</h6>
+                    <ul>
+                        <li><strong>Graphics API:</strong> OpenGL 3.3+ renderer with embedded GLAD loader and GLFW windowing.</li>
+                        <li><strong>Linear Algebra:</strong> GLM (OpenGL Mathematics) for transform matrices and vector calculations.</li>
+                    </ul>
+
+                    <h6>C. Testing & Quality Assurance</h6>
+                    <ul>
+                        <li><strong>Unit Testing Framework:</strong> Built using doctest across modular test suites (Core, Physics, Voxel, World, Render, Scene).</li>
+                        <li><strong>Clean Architecture:</strong> Strict clang-format code style compliance and automated CMake build pipelines.</li>
+                    </ul>
+
+                    <h5>3. Active Research & Next Steps</h5>
+                    <ul>
+                        <li>Researching dynamic LOD (Level of Detail) planet surface chunking and GPU voxel mesh generation.</li>
+                    </ul>
+                </div>
+            </article>
+        </section>
+
+        <section>
+            <h2>Projects</h2>
+            
+            <article>
+                <h3>Exam Preparation Platform</h3>
+                <p>A software engineering exam preparation platform, built to optimize studying with interactive tests and performance analysis.</p>
+                <p><strong>Link:</strong> https://herculano-esteves.github.io/examPreparation/</p>
+            </article>
+
+            <article>
+                <h3>Fleet Simulator</h3>
+                <p>A comprehensive fleet simulation for analyzing EV and Gas vehicle operations in urban environments. Models real OpenStreetMap data, traffic conditions, hotspot demands, weather states, charging logistics, and AI routing.</p>
+                <p><strong>Link:</strong> https://github.com/Herculano-Esteves/AI-25-26</p>
+            </article>
+
+            <article>
+                <h3>Flight Companion</h3>
+                <p>Consolidates flight tracking, boarding pass barcode parsing, trip planning, and context-aware chatbot guides. Developed in 48 hours for the BugsByte 2026 Hackathon.</p>
+                <p><strong>Video Showcase:</strong> https://www.youtube-nocookie.com/embed/pTjHLOc0qTQ</p>
+                <p><strong>Link:</strong> https://github.com/Herculano-Esteves/Flight_Companion</p>
+            </article>
+
+            <article>
+                <h3>Entity Editor</h3>
+                <p>A modular 2D Entity Editor designed for creating complex character rigs and entities for custom game engines. Features include Sprite Management, Pivot Control, UV Editing, and precise Hitbox Collision definitions.</p>
+                <p><strong>Link:</strong> https://github.com/Herculano-Esteves/entityEditor</p>
+            </article>
+        </section>
+    </div>
 
     <div id="root"></div>
 
