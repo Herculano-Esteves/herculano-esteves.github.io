@@ -1,48 +1,48 @@
 import React from 'react';
 import { ScrambleText } from '../components/ScrambleText';
 
-export function Education() {
+export function Opportunities() {
   return (
     <div className="page-wrapper" style={{ width: 'calc(var(--total-cols) * 1ch)', margin: '4rem auto 2rem auto' }}>
-      
+
       {/* Section Title */}
       <div style={{ textAlign: 'center', marginBottom: '2rem', width: '100%' }}>
         <h2 className="page-title">
-          <ScrambleText text="Education" duration={200} delay={0} />
+          <ScrambleText text="Opportunities & Research" duration={200} delay={0} />
         </h2>
       </div>
 
-      {/* Education Entries List */}
+      {/* Opportunities Entries */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>
-        
-        {/* 1. Master's Degree */}
+
+        {/* Work */}
         <div style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '1.5rem', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
-              <ScrambleText text="Master's in Software Engineering" duration={200} delay={100} />
+              <ScrambleText text="Engineering & Work" duration={200} delay={100} />
             </h3>
-            <span style={{ color: 'var(--dim)', fontSize: '0.9em', fontWeight: 'bold' }}>
-              [ 2026 - Present ]
+            <span style={{ color: 'var(--secondary)', fontSize: '0.85em' }}>
+              [ open to opportunities ]
             </span>
           </div>
-          <div style={{ textAlign: 'left', color: 'var(--primary)', fontSize: '0.95em', letterSpacing: '0.03em' }}>
-            University of Minho | Braga, Portugal
-          </div>
+          <p className="project-desc" style={{ color: 'var(--dim)', margin: 0 }}>
+            Open to Software Engineering positions, internships, and R&D engineering projects.
+          </p>
         </div>
 
-        {/* 2. Bachelor's Degree */}
+        {/* Location */}
         <div style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '1.5rem', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
-              <ScrambleText text="Bachelor's in Software Engineering" duration={200} delay={150} />
+              <ScrambleText text="Location & Availability" duration={200} delay={150} />
             </h3>
             <span style={{ color: 'var(--dim)', fontSize: '0.9em', fontWeight: 'bold' }}>
-              [ Sep 2023 - Jun 2026 ]
+              [ Braga / Remote / Hybrid ]
             </span>
           </div>
-          <div style={{ textAlign: 'left', color: 'var(--primary)', fontSize: '0.95em', letterSpacing: '0.03em' }}>
-            University of Minho | Braga, Portugal
-          </div>
+          <p className="project-desc" style={{ color: 'var(--dim)', margin: 0 }}>
+            Based in Braga, Portugal. Available for on-site, hybrid, or full remote collaboration.
+          </p>
         </div>
 
       </div>

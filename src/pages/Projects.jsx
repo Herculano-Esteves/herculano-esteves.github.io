@@ -149,6 +149,7 @@ function ProjectCard({ project, index, isLast }) {
                 images={project.images} 
                 layout={project.layout} 
                 aspectRatio={project.aspectRatio} 
+                projectTitle={project.title}
               />
             </div>
           )}

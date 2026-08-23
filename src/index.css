@@ -719,7 +719,8 @@ textarea {
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.95);
-    z-index: 25000; /* above simplebar and modal overlays */
+    z-index: 25000;
+    /* above simplebar and modal overlays */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -784,4 +785,89 @@ textarea {
 .portrait-ratio.layout-side-by-side {
     max-width: 450px;
     margin: 0 auto;
-}
+}
+
+/* ── Accessibility: Keyboard Focus Indicators (WCAG 2.1 AA / EAA 2025) ── */
+:focus-visible {
+    outline: 2px dashed var(--primary) !important;
+    outline-offset: 3px !important;
+}
+
+.project-img-item:focus-visible {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* ── Status Dot Pulse Animation ── */
+@keyframes terminal-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 4px var(--primary));
+    }
+
+    50% {
+        opacity: 0.35;
+        filter: none;
+    }
+}
+
+/* ── Minimalist Floating Chapter Navigation ── */
+.side-nav {
+    position: fixed;
+    right: 1.35rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    user-select: none;
+    pointer-events: auto;
+}
+
+@media (max-width: 1100px) {
+    .side-nav {
+        display: none;
+    }
+}
+
+.side-nav-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.6rem;
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+
+.side-nav-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.76rem !important;
+    text-align: right;
+    padding: 0.15rem 0.2rem;
+    color: var(--dim);
+    opacity: 0.45;
+    transform: scale(0.92);
+    transform-origin: right center;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        color 0.2s ease,
+        opacity 0.2s ease;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+}
+
+.side-nav-link:hover {
+    color: var(--secondary) !important;
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.side-nav-link.active {
+    color: var(--primary) !important;
+    opacity: 1;
+    font-weight: bold;
+    transform: scale(1.15);
+}

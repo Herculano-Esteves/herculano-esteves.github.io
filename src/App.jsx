@@ -3,8 +3,11 @@ import { Home } from './pages/Home';
 import { Education } from './pages/Education';
 import { Research } from './pages/Research';
 import { Projects } from './pages/Projects';
+import { Opportunities } from './pages/Opportunities';
+import { SideNav } from './components/SideNav';
 import { AssetsGallery } from './components/AssetsGallery';
 import { CONFIG } from './config';
+import { initGlobalClickSound } from './utils/audio';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
@@ -45,6 +48,11 @@ export default function App() {
     }
   }, []);
 
+  // Initialize Web Audio subtle mechanical clicks on button & link clicks
+  useEffect(() => {
+    return initGlobalClickSound();
+  }, []);
+
   // Listen to scroll events on SimpleBar content wrapper
   useEffect(() => {
     const scrollEl = simpleBarRef.current?.getScrollElement();
@@ -73,13 +81,27 @@ export default function App() {
         <div className="terminal-screen">
           {/* Dynamic Content Container - Stacking all sections vertically */}
           <main className="content-container">
-            <Home scrolled={scrolled} />
-            <Education />
-            <Research />
-            <Projects />
+            <section id="home">
+              <Home scrolled={scrolled} />
+            </section>
+            <section id="education">
+              <Education />
+            </section>
+            <section id="opportunities">
+              <Opportunities />
+            </section>
+            <section id="research">
+              <Research />
+            </section>
+            <section id="projects">
+              <Projects />
+            </section>
           </main>
         </div>
       </SimpleBar>
+
+      {/* Floating Side Chapter Navigation */}
+      <SideNav simpleBarRef={simpleBarRef} />
 
       {/* Secret Design System Modal Overlay - Triggered via ?assets=true URL parameter */}
       {showAssets && <AssetsGallery onClose={() => setShowAssets(false)} />}
