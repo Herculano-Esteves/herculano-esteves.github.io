@@ -218,8 +218,8 @@ textarea {
     width: 100%;
 }
 
-/* Make the first section (Home) occupy the full initial viewport to center Herculano Esteves */
-.content-container> :first-child {
+/* Make the first section (Home) occupy the full initial viewport to center Pedro Esteves */
+.content-container > :first-child {
     min-height: calc(100vh - 4rem);
     display: flex;
     flex-direction: column;

@@ -81,9 +81,7 @@ export default function App() {
         <div className="terminal-screen">
           {/* Dynamic Content Container - Stacking all sections vertically */}
           <main className="content-container">
-            <section id="home">
-              <Home scrolled={scrolled} />
-            </section>
+            <Home id="home" scrolled={scrolled} />
             <section id="education">
               <Education />
             </section>
