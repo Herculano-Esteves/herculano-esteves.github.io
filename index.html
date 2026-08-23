@@ -67,59 +67,57 @@
         <section>
             <h2>Active Research / Devlogs</h2>
             <article>
-                <h3>Planet Game Engine [active]</h3>
+                <h3>Planet Game Engine</h3>
                 <p><strong>Period:</strong> 2026 - Present</p>
                 <p><strong>Tags:</strong> #C++, #OpenGL 3.3+, #Jolt Physics</p>
-                <p><strong>Summary:</strong> A high-performance C++ game engine engineered for universe & planet
-                    simulations, featuring double-precision Jolt Physics, OpenGL rendering, and an EnTT Entity Component
-                    System.</p>
+                <p><strong>Summary:</strong> A custom C++ game engine built from scratch for universe and planet-scale simulations.</p>
 
                 <h4>Devlog Content:</h4>
                 <div>
-                    <h5>1. Project Overview & Objectives</h5>
-                    <p>Planet Game Engine is a high-performance C++ game engine specifically designed for universe-scale
-                        dynamic simulations. The primary engineering goal is to support vast coordinate spaces
-                        (planet-scale mechanics) without precision loss while maintaining high-frame-rate rendering and
-                        physics simulation.</p>
-                    <p>Key architectural highlights:</p>
+                    <h5>Overview</h5>
+                    <p>Building a custom C++ game engine from scratch to simulate solar systems and planet-scale environments without losing precision at large distances.</p>
+                    <p>Key focus areas:</p>
                     <ul>
-                        <li><strong>Double-Precision World Coordinates:</strong> Configured with double-precision
-                            floating-point scalars to eliminate precision jitter.</li>
-                        <li><strong>Data-Oriented Entity Component System (ECS):</strong> Utilizing EnTT for cache-line
-                            efficient component iteration.</li>
-                        <li><strong>Rigid Body Dynamics:</strong> Integrated Jolt Physics with AVX2 SIMD acceleration.
-                        </li>
+                        <li><strong>Double-Precision Coordinates:</strong> Using 64-bit precision so objects move smoothly across vast planetary distances without jitter.</li>
+                        <li><strong>Physics & ECS:</strong> Integrating Jolt Physics for collisions and EnTT for fast entity management.</li>
+                        <li><strong>Rendering & Tests:</strong> Modern OpenGL 3.3 renderer and automated unit tests with doctest.</li>
                     </ul>
 
-                    <h5>2. Technical Stack & Core Modules</h5>
-                    <h6>A. Physics & Dynamics Module</h6>
+                    <h5>Architectural Challenges</h5>
+                    <p>Traditional engines often run into floating-point issues when handling astronomical scales alongside player-scale interactions. Building the core systems directly in C++ allows full control over data memory layouts, coordinate shifts, and AVX2 vectorization specifically tailored for universe physics.</p>
+
+                    <h5>What I'm Exploring Next</h5>
                     <ul>
-                        <li><strong>Engine Integration:</strong> Integrated Jolt Physics with custom double-precision
-                            bindings.</li>
-                        <li><strong>SIMD Acceleration:</strong> CPU vectorization using AVX2 instruction sets for rigid
-                            body contacts and broadphase queries.</li>
+                        <li>Dynamic planet Level of Detail (LOD) chunking.</li>
+                        <li>GPU voxel terrain generation for seamless planet surfaces.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article>
+                <h3>Exam Preparation Platform</h3>
+                <p><strong>Period:</strong> 2025 - Present</p>
+                <p><strong>Tags:</strong> #React, #Open-Source</p>
+                <p><strong>Summary:</strong> An open-source study platform designed to help university students practice and prepare for exams in any subject.</p>
+
+                <h4>Devlog Content:</h4>
+                <div>
+                    <h5>Overview</h5>
+                    <p>An open-source web application designed to help university students study more effectively. The goal is to provide a clean, distraction-free place to practice mock tests and verify answers for any course.</p>
+                    <p>Key features:</p>
+                    <ul>
+                        <li><strong>Universal Practice:</strong> Modular question sets adaptable to different subjects.</li>
+                        <li><strong>Instant Feedback:</strong> Timed sessions with automated scoring and answer reviews.</li>
+                        <li><strong>Lightweight & Private:</strong> Fast React frontend with zero tracking.</li>
                     </ul>
 
-                    <h6>B. Graphics & Rendering Engine</h6>
-                    <ul>
-                        <li><strong>Graphics API:</strong> OpenGL 3.3+ renderer with embedded GLAD loader and GLFW
-                            windowing.</li>
-                        <li><strong>Linear Algebra:</strong> GLM (OpenGL Mathematics) for transform matrices and vector
-                            calculations.</li>
-                    </ul>
+                    <h5>Motivation & Study Flow</h5>
+                    <p>Most study platforms either lack flexible question customization or clutter the experience with unnecessary paywalls. My focus is keeping this completely open and student-first: providing clean statistical feedback on weak areas, instant answer verification, and a distraction-free environment for deep practice sessions.</p>
 
-                    <h6>C. Testing & Quality Assurance</h6>
+                    <h5>What I'm Exploring Next</h5>
                     <ul>
-                        <li><strong>Unit Testing Framework:</strong> Built using doctest across modular test suites
-                            (Core, Physics, Voxel, World, Render, Scene).</li>
-                        <li><strong>Clean Architecture:</strong> Strict clang-format code style compliance and automated
-                            CMake build pipelines.</li>
-                    </ul>
-
-                    <h5>3. Active Research & Next Steps</h5>
-                    <ul>
-                        <li>Researching dynamic LOD (Level of Detail) planet surface chunking and GPU voxel mesh
-                            generation.</li>
+                        <li>Conducting user testing with university students to evaluate study flow and usability.</li>
+                        <li>Adding community question sharing and study deck imports.</li>
                     </ul>
                 </div>
             </article>
@@ -161,7 +159,7 @@
         </section>
 
         <section>
-            <h2>Opportunities & Research</h2>
+            <h2>Opportunities</h2>
             <article>
                 <h3>Engineering & Work</h3>
                 <p>Open to Software Engineering positions, internships, and R&D engineering projects.</p>

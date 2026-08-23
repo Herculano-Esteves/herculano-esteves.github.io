@@ -3,44 +3,60 @@ import { createPortal } from 'react-dom';
 import { ScrambleText } from '../components/ScrambleText';
 import SimpleBar from 'simplebar-react';
 
-// Research & devlog dataset featuring technical specifications from Planet Game Engine
+// Research & devlog dataset featuring active projects
 const RESEARCH_ITEMS = [
   {
     id: 'planet-game-engine',
     title: 'Planet Game Engine',
-    status: 'active',
     period: '2026 - Present',
     tags: ['C++', 'OpenGL 3.3+', 'Jolt Physics'],
-    summary: 'A high-performance C++ game engine engineered for universe & planet simulations, featuring double-precision Jolt Physics, OpenGL rendering, and an EnTT Entity Component System.',
+    summary: 'A custom C++ game engine built from scratch for universe and planet-scale simulations.',
     content: `
-## 1. Project Overview & Objectives
-Planet Game Engine is a high-performance C++ game engine specifically designed for universe-scale dynamic simulations. The primary engineering goal is to support vast coordinate spaces (planet-scale mechanics) without precision loss while maintaining high-frame-rate rendering and physics simulation.
+## Overview
+Building a custom C++ game engine from scratch to simulate solar systems and planet-scale environments without losing precision at large distances.
 
-Key architectural highlights:
-- **Double-Precision World Coordinates:** Configured with double-precision floating-point scalars to eliminate precision jitter.
-- **Data-Oriented Entity Component System (ECS):** Utilizing EnTT for cache-line efficient component iteration.
-- **Rigid Body Dynamics:** Integrated Jolt Physics with AVX2 SIMD acceleration.
-
----
-
-## 2. Technical Stack & Core Modules
-
-### A. Physics & Dynamics Module
-- **Engine Integration:** Integrated Jolt Physics with custom double-precision bindings.
-- **SIMD Acceleration:** CPU vectorization using AVX2 instruction sets for rigid body contacts and broadphase queries.
-
-### B. Graphics & Rendering Engine
-- **Graphics API:** OpenGL 3.3+ renderer with embedded GLAD loader and GLFW windowing.
-- **Linear Algebra:** GLM (OpenGL Mathematics) for transform matrices and vector calculations.
-
-### C. Testing & Quality Assurance
-- **Unit Testing Framework:** Built using doctest across modular test suites (Core, Physics, Voxel, World, Render, Scene).
-- **Clean Architecture:** Strict clang-format code style compliance and automated CMake build pipelines.
+Key focus areas:
+- **Double-Precision Coordinates:** Using 64-bit precision so objects move smoothly across vast planetary distances without jitter.
+- **Physics & ECS:** Integrating Jolt Physics for collisions and EnTT for fast entity management.
+- **Rendering & Tests:** Modern OpenGL 3.3 renderer and automated unit tests with doctest.
 
 ---
 
-## 3. Active Research & Next Steps
-- Researching dynamic LOD (Level of Detail) planet surface chunking and GPU voxel mesh generation.
+## Architectural Challenges
+Traditional engines often run into floating-point issues when handling astronomical scales alongside player-scale interactions. Building the core systems directly in C++ allows full control over data memory layouts, coordinate shifts, and AVX2 vectorization specifically tailored for universe physics.
+
+---
+
+## What I'm Exploring Next
+- Dynamic planet Level of Detail (LOD) chunking.
+- GPU voxel terrain generation for seamless planet surfaces.
+    `
+  },
+  {
+    id: 'exam-preparation-platform',
+    title: 'Exam Preparation Platform',
+    period: '2025 - Present',
+    tags: ['React', 'Open-Source'],
+    summary: 'An open-source study platform designed to help university students practice and prepare for exams in any subject.',
+    content: `
+## Overview
+An open-source web application designed to help university students study more effectively. The goal is to provide a clean, distraction-free place to practice mock tests and verify answers for any course.
+
+Key features:
+- **Universal Practice:** Modular question sets adaptable to different subjects.
+- **Instant Feedback:** Timed sessions with automated scoring and answer reviews.
+- **Lightweight & Private:** Fast React frontend with zero tracking.
+
+---
+
+## Motivation & Study Flow
+Most study platforms either lack flexible question customization or clutter the experience with unnecessary paywalls. My focus is keeping this completely open and student-first: providing clean statistical feedback on weak areas, instant answer verification, and a distraction-free environment for deep practice sessions.
+
+---
+
+## What I'm Exploring Next
+- Conducting user testing with university students to evaluate study flow and usability.
+- Adding community question sharing and study deck imports.
     `
   }
 ];
@@ -59,13 +75,13 @@ function parseFormattedLine(text) {
     const token = match[0];
     if (token.startsWith('**') && token.endsWith('**')) {
       parts.push(
-        <strong key={match.index} style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
+        <span key={match.index} style={{ color: 'var(--primary)', fontWeight: 'normal' }}>
           {token.slice(2, -2)}
-        </strong>
+        </span>
       );
     } else if (token.startsWith('`') && token.endsWith('`')) {
       parts.push(
-        <code key={match.index} style={{ background: 'rgba(255,255,255,0.08)', padding: '0.1rem 0.4ch', color: 'var(--primary)' }}>
+        <code key={match.index} style={{ background: 'rgba(255,255,255,0.08)', padding: '0.1rem 0.4ch', color: 'var(--primary)', fontWeight: 'normal' }}>
           {token.slice(1, -1)}
         </code>
       );
@@ -167,7 +183,7 @@ export function DevlogModal({ item, onClose }) {
 
           {/* Subtitle Line (Left Aligned, Matching Education format) */}
           <div style={{ textAlign: 'left', color: 'var(--primary)', fontSize: '0.95em', letterSpacing: '0.03em', marginBottom: '1.5rem' }}>
-            Research Devlog | Status: {item.status}
+            Research Devlog
           </div>
 
           {/* Main Devlog Content */}
@@ -209,14 +225,9 @@ export function Research() {
 
             {/* Header: Title & Read Devlog Button */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '1ch', flexWrap: 'wrap' }}>
-                <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
-                  <ScrambleText text={item.title} duration={200} delay={100 + index * 50} />
-                </h3>
-                <span style={{ color: 'var(--secondary)', fontSize: '0.85em' }}>
-                  [{item.status}]
-                </span>
-              </div>
+              <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
+                <ScrambleText text={item.title} duration={200} delay={100 + index * 50} />
+              </h3>
 
               <button
                 onClick={() => setActiveDevlog(item)}

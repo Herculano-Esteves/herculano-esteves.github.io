@@ -8,7 +8,7 @@ export function Opportunities() {
       {/* Section Title */}
       <div style={{ textAlign: 'center', marginBottom: '2rem', width: '100%' }}>
         <h2 className="page-title">
-          <ScrambleText text="Opportunities & Research" duration={200} delay={0} />
+          <ScrambleText text="Opportunities" duration={200} delay={0} />
         </h2>
       </div>
 
