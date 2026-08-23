@@ -19,10 +19,10 @@ export function Home({ scrolled = false, id = "home" }) {
   };
 
   const COLS = CONFIG.totalCols;
-  const mid = 6; // Fixed baseline row for name
-  const rowDegree = 12;
-  const rowSocials = 14;
-  const rowProject = 17;
+  const mid = 11; // Center anchor for Pedro Esteves
+  const rowDegree = 16; // Generous distance away from Esteves (5 lines down)
+  const rowSocials = 18; // Compact previous spacing (2 lines down)
+  const rowProject = 21; // Compact previous spacing (3 lines down)
 
   return (
     <section id={id} className="page-wrapper" style={{ position: 'relative' }}>
