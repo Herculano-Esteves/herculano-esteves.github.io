@@ -14,6 +14,11 @@ export function Home({ scrolled = false, id = "home" }) {
     window.open('https://www.linkedin.com/in/pedro-herculano-esteves-204573354/', '_blank', 'noopener,noreferrer');
   };
 
+  const handleEmailClick = (e) => {
+    e.stopPropagation();
+    window.location.href = 'mailto:PedroHerculano@proton.me';
+  };
+
   const handleProjectClick = () => {
     window.open('https://herculano-esteves.github.io/examPreparation/', '_blank', 'noopener,noreferrer');
   };
@@ -52,19 +57,25 @@ export function Home({ scrolled = false, id = "home" }) {
           </Center>
         </Row>
 
-        {/* Socials Bar: github | linkedin (with pipe bar centered on vertical axis) */}
+        {/* Socials Bar: github | linkedin | email (with pipe bars centered on vertical axis) */}
         <Row y={rowSocials}>
           <Center>
-            <div style={{ display: 'flex', width: '24ch', alignItems: 'center' }}>
+            <div style={{ display: 'flex', width: '36ch', alignItems: 'center' }}>
               <div style={{ flex: 1, textAlign: 'right', paddingRight: '1ch' }}>
                 <button onClick={handleGithubClick} className="btn-link" type="button">
                   <ScrambleText text="github" duration={150} delay={250} />
                 </button>
               </div>
               <span style={{ color: 'var(--muted)' }}>|</span>
-              <div style={{ flex: 1, textAlign: 'left', paddingLeft: '1ch' }}>
+              <div style={{ flex: 1, textAlign: 'center', paddingLeft: '1ch', paddingRight: '1ch' }}>
                 <button onClick={handleLinkedinClick} className="btn-link" type="button">
                   <ScrambleText text="linkedin" duration={150} delay={280} />
+                </button>
+              </div>
+              <span style={{ color: 'var(--muted)' }}>|</span>
+              <div style={{ flex: 1, textAlign: 'left', paddingLeft: '1ch' }}>
+                <button onClick={handleEmailClick} className="btn-link" type="button">
+                  <ScrambleText text="email" duration={150} delay={310} />
                 </button>
               </div>
             </div>
