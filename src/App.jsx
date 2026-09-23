@@ -7,7 +7,6 @@ import { Opportunities } from './pages/Opportunities';
 import { SideNav } from './components/SideNav';
 import { AssetsGallery } from './components/AssetsGallery';
 import { CONFIG } from './config';
-import { initGlobalClickSound } from './utils/audio';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
@@ -48,10 +47,6 @@ export default function App() {
     }
   }, []);
 
-  // Initialize Web Audio subtle mechanical clicks on button & link clicks
-  useEffect(() => {
-    return initGlobalClickSound();
-  }, []);
 
   // Listen to scroll events on SimpleBar content wrapper
   useEffect(() => {

@@ -725,7 +725,7 @@ textarea {
     justify-content: center;
     align-items: center;
     cursor: zoom-out;
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 .lightbox-content {
@@ -735,16 +735,69 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    cursor: default;
+}
+
+.lightbox-image-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    max-width: 100%;
 }
 
 .lightbox-image {
-    max-width: 100%;
-    max-height: 80vh;
+    max-width: calc(92vw - 7rem);
+    max-height: 75vh;
     object-fit: contain;
     border: 2px solid var(--primary);
     box-shadow: var(--glow);
+    display: block;
+    flex-shrink: 1;
 }
+
+.lightbox-nav-btn {
+    flex-shrink: 0;
+    background: #181818;
+    border: 1px solid var(--muted);
+    border-radius: 0 !important;
+    color: var(--dim) !important;
+    font-size: 1.15rem;
+    font-family: inherit;
+    font-weight: bold;
+    width: 1.8rem;
+    height: 2.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    user-select: none;
+    line-height: 1;
+    padding: 0;
+}
+
+.lightbox-nav-btn:hover {
+    background: #333333;
+    border-color: var(--dim);
+    color: var(--primary) !important;
+}
+
+.lightbox-nav-btn:active {
+    background: #444444;
+}
+
+.lightbox-footer {
+    display: flex;
+    align-items: center;
+    gap: 2ch;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 
 .lightbox-close {
     background: none;
