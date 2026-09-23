@@ -9,27 +9,53 @@ const RESEARCH_ITEMS = [
     id: 'planet-game-engine',
     title: 'Planet Game Engine',
     period: '2026 - Present',
-    tags: ['C++', 'OpenGL 3.3+', 'Jolt Physics'],
-    summary: 'A custom C++ game engine built from scratch for universe and planet-scale simulations.',
+    tags: ['C++17', 'OpenGL 3.3+', 'Jolt Physics', 'EnTT'],
+    summary: 'A custom C++17 space simulation engine featuring double-precision orbits, walkable ship interiors, voxel hull destruction, and multi-anchor terrain streaming.',
     content: `
 ## Overview
-Building a custom C++ game engine from scratch to simulate solar systems and planet-scale environments without losing precision at large distances.
-
-Key focus areas:
-- **Double-Precision Coordinates:** Using 64-bit precision so objects move smoothly across vast planetary distances without jitter.
-- **Physics & ECS:** Integrating Jolt Physics for collisions and EnTT for fast entity management.
-- **Rendering & Tests:** Modern OpenGL 3.3 renderer and automated unit tests with doctest.
+Building a custom C++ game engine from scratch to simulate large-scale space environments, physics-driven starships, and multiplayer foundations. What started as an experiment with planetary orbits has grown into an engine with walkable ship interiors, voxel-based destruction, and procedural terrain.
 
 ---
 
-## Architectural Challenges
-Traditional engines often run into floating-point issues when handling astronomical scales alongside player-scale interactions. Building the core systems directly in C++ allows full control over data memory layouts, coordinate shifts, and AVX2 vectorization specifically tailored for universe physics.
+## Phase 1: Engine Foundations & Planetary Scale
+Standard game engines rely on 32-bit floats, which quickly cause jitter and broken collisions when dealing with huge distances. I wanted to simulate solar systems accurately without floating-point precision issues, so I built the core directly in C++17:
+- **Double-Precision Coordinates:** Using 64-bit precision (glm::dvec3) for entity positions so objects move smoothly across vast planetary distances without jitter.
+- **Camera-Relative Rendering:** Shifting large coordinates relative to the camera before sending them to OpenGL 3.3+ in float, keeping visuals clean and jitter-free.
+- **ECS & Physics:** Integrating EnTT for data-oriented entity management and Jolt Physics for collisions, taking advantage of SIMD (AVX2) for fast calculations.
 
 ---
 
-## What I'm Exploring Next
-- Dynamic planet Level of Detail (LOD) chunking.
-- GPU voxel terrain generation for seamless planet surfaces.
+## Phase 2: Dynamic Ships, Destruction & Multiplayer
+
+### 2.1 The Interior Physics Problem
+Once orbital motion was working, I wanted players to build and walk inside their ships while flying through space. I initially tried putting everything into a single physics world, but physics engines struggle when a player tries to walk inside a craft spinning and accelerating at high speeds—characters slide around or clip through floors.
+
+To fix this, I separated physics into two parallel worlds using Jolt Physics:
+- **Outer Space:** Simulates planets, gravity, and the ship's outer rigid hull.
+- **Ship Interior:** An isolated local space where players, furniture, and loose items move normally on the ship's floor.
+
+A simple transform syncs the interior with the ship in real time, so players can walk around smoothly even during aggressive maneuvers.
+
+### 2.2 Voxel Ships & Hull Destruction
+Instead of using static 3D models, I switched to building ships block by block with voxels. I wanted complete creative freedom for the player, where any ship design is possible, and the engine automatically recalculates mass, center of gravity, and rotational inertia on the fly.
+
+I also wanted space battles to feel exciting and chaotic:
+- The engine uses graph connectivity algorithms to check if blocks are still physically attached to each other.
+- When an explosion cuts a ship in half, the graph detects the break and splits the ship into separate physical pieces that continue tumbling through space independently.
+
+### 2.3 Multi-Anchor Terrain Streaming
+In Phase 1, terrain was just an early goal for a single observer. As the project grew, I needed terrain that could support multiple players or probes across different planets at the same time. The streaming system now tracks active regions around multiple anchors and keeps chunks loaded without stuttering the main physics loop.
+
+### 2.4 Determinism & Automated Testing
+Game engines can easily become a debugging nightmare, especially with custom physics and multiplayer. I rely heavily on automated tests, with over 310 tests with 6,300+ assertions using doctest.
+
+Tests might feel tedious, but for me they are essential at every step. Their biggest benefit is ensuring determinism between Windows and Linux. Because cross-platform multiplayer needs physics and block destruction to match exactly on both systems, automated tests give me confidence that code changes won't cause silent desyncs.
+
+---
+
+## Phase 3: What I'm Exploring Next
+- Networking transport layer with client-side prediction and snapshot interpolation.
+- Generating procedural terrain meshes directly on the GPU using compute shaders.
     `
   },
   {
@@ -81,9 +107,9 @@ function parseFormattedLine(text) {
       );
     } else if (token.startsWith('`') && token.endsWith('`')) {
       parts.push(
-        <code key={match.index} style={{ background: 'rgba(255,255,255,0.08)', padding: '0.1rem 0.4ch', color: 'var(--primary)', fontWeight: 'normal' }}>
+        <span key={match.index} style={{ color: 'var(--primary)', fontFamily: 'inherit' }}>
           {token.slice(1, -1)}
-        </code>
+        </span>
       );
     }
     currentIndex = regex.lastIndex;
