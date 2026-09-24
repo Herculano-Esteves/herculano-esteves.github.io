@@ -4,7 +4,8 @@ import { ProjectImageLayout } from '../components/ProjectImageLayout';
 import { CONFIG } from '../config';
 
 // Images for Exam Preparation
-import examMakingImg from '../../assets/projects/exam_preparation/making_exam.webp';
+import examSubjectImg from '../../assets/projects/exam_preparation/subjectchoosing.webp';
+import examChoosingImg from '../../assets/projects/exam_preparation/examchoosing.webp';
 import examQuestionImg from '../../assets/projects/exam_preparation/question.webp';
 
 // Images for Fleet Simulator
@@ -26,8 +27,8 @@ const PROJECTS_DATA = [
   {
     title: "Exam Preparation Platform",
     description: "A software engineering exam preparation platform, built to optimize studying with interactive tests and performance analysis.",
-    images: [examMakingImg, examQuestionImg],
-    layout: 'side-by-side',
+    images: [examSubjectImg, examChoosingImg, examQuestionImg],
+    layout: 'carousel',
     aspectRatio: 'landscape',
     link: "https://herculano-esteves.github.io/examPreparation/"
   },
