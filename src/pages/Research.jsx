@@ -84,6 +84,42 @@ Most study platforms either lack flexible question customization or clutter the 
 - Conducting user testing with university students to evaluate study flow and usability.
 - Adding community question sharing and study deck imports.
     `
+  },
+  {
+    id: 'security-ai',
+    title: 'Security-AI',
+    period: '2026 - Present',
+    tags: ['Python', 'LLM Security', 'Prompt Injection', 'Ollama'],
+    summary: 'A modular framework for security auditing, vulnerability evaluation, and automated Prompt Injection testing against local and remote Large Language Models.',
+    content: `
+## Overview
+A modular framework for security auditing, vulnerability evaluation, and automated Prompt Injection testing against local and remote Large Language Models. Built to evaluate LLM defenses, sandbox tools, and system prompts under adversarial conditions.
+
+While underlying models support multiple languages, all prompts, evaluation scripts, and dataset interactions are standardized in English to prevent formatting and schema mismatches during automated testing.
+
+Key components:
+- **Aegis Engine:** Core security evaluation framework, AegisLab simulated environments, and attack runner engine.
+- **Attack Library:** YAML attack catalog with structured payloads (OWASP LLM01, MITRE ATLAS).
+- **Isolated AI Client:** Dedicated local inference module configured for Ollama (\`qwen3.5:4b\` with controlled temperature).
+- **Sandbox Vault:** Protected filesystem sandbox directory containing monitored system and business data.
+- **Reports & ADRs:** Technical evaluation reports, incident logs, and Architecture Decision Records (ADRs).
+- **Setup & Automation:** Automated scripts to start, monitor, and clean up local model processes.
+
+---
+
+## Execution & Security Auditing
+The project provides dedicated Python scripts for chatting, auditing sandbox tools, and executing automated attacks:
+- **Interactive Sandbox Agent:** Interactive CLI where the AI inspects sandbox files (\`read_file\`, \`list_files\`, \`read_all_files\`) while testing tool call constraints.
+- **AegisLab Scenarios:** Direct testing and chat against isolated security lab environments (such as basic prompt injection).
+- **Prompt Injection Runner:** Executes structured YAML attack payloads against live local models or lab targets to evaluate defense metrics.
+- **Automated Verification:** Comprehensive test suite built with \`pytest\` covering unit tests, tool validation, and security attack simulations.
+
+---
+
+## What I'm Exploring Next
+- Expanding the attack catalog to include multi-turn jailbreaks and indirect prompt injection vectors.
+- Automated generation of security evaluation reports and defensive benchmark scoring.
+    `
   }
 ];
 
