@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrambleText } from '../components/ScrambleText';
+import { OPPORTUNITIES_DATA } from '../data/opportunities';
 
 export function Opportunities() {
   return (
@@ -14,37 +15,27 @@ export function Opportunities() {
 
       {/* Opportunities Entries */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>
-
-        {/* Work */}
-        <div style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '1.5rem', width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
-              <ScrambleText text="Engineering & Work" duration={200} delay={100} />
-            </h3>
-            <span style={{ color: 'var(--secondary)', fontSize: '0.85em' }}>
-              [ open to opportunities ]
-            </span>
+        {OPPORTUNITIES_DATA.map((item, index) => (
+          <div key={index} style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '1.5rem', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
+                <ScrambleText text={item.title} duration={200} delay={100 + index * 50} />
+              </h3>
+              <span 
+                style={{ 
+                  color: item.statusVariant === 'secondary' ? 'var(--secondary)' : 'var(--dim)', 
+                  fontSize: item.statusVariant === 'secondary' ? '0.85em' : '0.9em',
+                  fontWeight: item.statusVariant === 'dim' ? 'bold' : 'normal'
+                }}
+              >
+                {item.status}
+              </span>
+            </div>
+            <p className="project-desc" style={{ color: 'var(--dim)', margin: 0 }}>
+              {item.description}
+            </p>
           </div>
-          <p className="project-desc" style={{ color: 'var(--dim)', margin: 0 }}>
-            Open to Software Engineering positions, internships, and R&D engineering projects.
-          </p>
-        </div>
-
-        {/* Location */}
-        <div style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '1.5rem', width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
-              <ScrambleText text="Location & Availability" duration={200} delay={150} />
-            </h3>
-            <span style={{ color: 'var(--dim)', fontSize: '0.9em', fontWeight: 'bold' }}>
-              [ Braga / Remote / Hybrid ]
-            </span>
-          </div>
-          <p className="project-desc" style={{ color: 'var(--dim)', margin: 0 }}>
-            Based in Braga, Portugal. Available for on-site, hybrid, or full remote collaboration.
-          </p>
-        </div>
-
+        ))}
       </div>
 
     </div>
