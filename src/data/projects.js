@@ -11,6 +11,7 @@ import fleetTrafficImg from '../../assets/projects/fleet_simulator/traffic.webp'
 import flightMenuImg from '../../assets/projects/flight_companion/menu.webp';
 import flightPlanImg from '../../assets/projects/flight_companion/plan_trip.webp';
 import flightTicketImg from '../../assets/projects/flight_companion/ticket.webp';
+import flightVideoThumb from '../../assets/projects/flight_companion/video_thumbnail.webp';
 
 // Images for Entity Editor
 import entityMenuImg from '../../assets/projects/entity_editor/editor_menu.webp';
@@ -41,7 +42,8 @@ export const PROJECTS_DATA = [
     images: [flightMenuImg, flightPlanImg, flightTicketImg],
     layout: 'three-columns',
     aspectRatio: 'portrait',
-    videoUrl: "https://www.youtube-nocookie.com/embed/pTjHLOc0qTQ",
+    videoUrl: "https://www.youtube.com/watch?v=pTjHLOc0qTQ",
+    videoThumbnail: flightVideoThumb,
     link: "https://github.com/Herculano-Esteves/Flight_Companion"
   },
   {

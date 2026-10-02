@@ -69,23 +69,27 @@ function ProjectCard({ project, index, isLast }) {
           {project.videoUrl && (
             <div 
               className="project-video-container" 
-              style={{ 
-                display: showVideo ? 'block' : 'none',
-                position: 'relative', 
-                paddingBottom: '56.25%', 
-                height: 0, 
-                overflow: 'hidden', 
-                border: '1px solid var(--muted)', 
-                margin: '1rem 0' 
-              }}
+              style={{ display: showVideo ? 'block' : 'none' }}
             >
-              <iframe
-                src={showVideo ? project.videoUrl : ""}
-                title={`${project.title} Video Showcase`}
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              <a
+                href={project.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="video-preview-link"
+                aria-label={`Watch ${project.title} video showcase on YouTube (opens in new tab)`}
+              >
+                {project.videoThumbnail && (
+                  <img
+                    src={project.videoThumbnail}
+                    alt={`${project.title} Video Preview`}
+                    className="video-preview-thumb"
+                  />
+                )}
+                <div className="video-play-badge">
+                  <span>▶</span>
+                  <span> watch video on YouTube ↗</span>
+                </div>
+              </a>
             </div>
           )}
 
