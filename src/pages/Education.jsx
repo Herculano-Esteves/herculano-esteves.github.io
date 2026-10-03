@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrambleText } from '../components/ScrambleText';
-import { EDUCATION_DATA } from '../data/education';
+import { EDUCATION_DATA, LANGUAGES_DATA } from '../data/education';
 
 export function Education() {
   return (
@@ -28,8 +28,44 @@ export function Education() {
             <div style={{ textAlign: 'left', color: 'var(--primary)', fontSize: '0.95em', letterSpacing: '0.03em' }}>
               {item.institution}
             </div>
+            {item.specializationProfiles && item.specializationProfiles.length > 0 && (
+              <div style={{ textAlign: 'left', marginTop: '0.4rem', fontSize: '0.9em', letterSpacing: '0.02em' }}>
+                <span style={{ color: 'var(--dim)' }}>Specialization Profiles: </span>
+                <span style={{ color: 'var(--secondary)' }}>{item.specializationProfiles.join(' & ')}</span>
+              </div>
+            )}
           </div>
         ))}
+      </div>
+
+      {/* Languages Sub-section */}
+      <div style={{ marginTop: '3.5rem', width: '100%' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem', width: '100%' }}>
+          <h2 className="page-title" style={{ fontSize: '1.3em' }}>
+            <ScrambleText text="Languages" duration={200} delay={220} />
+          </h2>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>
+          {LANGUAGES_DATA.map((item, index) => (
+            <div key={index} style={{ borderBottom: '1px dashed var(--muted)', paddingBottom: '1.5rem', width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <h3 className="project-title" style={{ textTransform: 'uppercase' }}>
+                  <ScrambleText text={item.language} duration={200} delay={260 + index * 50} />
+                </h3>
+                <span style={{ color: 'var(--dim)', fontSize: '0.9em', fontWeight: 'bold' }}>
+                  [ {item.level} ]
+                </span>
+              </div>
+              {item.certification && (
+                <div style={{ textAlign: 'left', fontSize: '0.9em', letterSpacing: '0.02em' }}>
+                  <span style={{ color: 'var(--dim)' }}></span>
+                  <span style={{ color: 'var(--secondary)' }}>{item.certification}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
     </div>

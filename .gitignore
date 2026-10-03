@@ -34,8 +34,10 @@ node_modules/
 /.node/
 /.npm_cache/
 
-# Local Python Venv
+# Local Python Venv & Bytecode
 /.venv/
+__pycache__/
+*.pyc
 
 
 # Test
