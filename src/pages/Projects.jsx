@@ -87,7 +87,7 @@ function ProjectCard({ project, index, isLast }) {
                 )}
                 <div className="video-play-badge">
                   <span>▶</span>
-                  <span> watch video on YouTube ↗</span>
+                  <span>  watch on YouTube</span>
                 </div>
               </a>
             </div>

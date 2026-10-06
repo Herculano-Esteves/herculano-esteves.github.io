@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Home } from './pages/Home';
 import { Education } from './pages/Education';
+import { Experience } from './pages/Experience';
 import { Research } from './pages/Research';
 import { Projects } from './pages/Projects';
 import { Opportunities } from './pages/Opportunities';
@@ -79,6 +80,9 @@ export default function App() {
             <Home id="home" scrolled={scrolled} />
             <section id="education">
               <Education />
+            </section>
+            <section id="experience">
+              <Experience />
             </section>
             <section id="opportunities">
               <Opportunities />
