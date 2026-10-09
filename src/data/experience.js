@@ -1,6 +1,15 @@
 export const EXPERIENCE_DATA = [
   {
     title: "CeSIUM",
+    role: "Co-Director of Marketing & Content",
+    period: "2026 - 2027",
+    location: "Braga, Portugal",
+    description: [
+      "Co-directing the Marketing and Content Department, overseeing communication strategies, promotional campaigns, and digital media."
+    ]
+  },
+  {
+    title: "CeSIUM",
     role: "Collaborator",
     period: "2023 - 2026",
     location: "Braga, Portugal",

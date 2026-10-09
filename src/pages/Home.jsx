@@ -52,7 +52,7 @@ export function Home({ scrolled = false, id = "home" }) {
         <Row y={rowDegree}>
           <Center>
             <span className="school" style={{ color: 'var(--primary)' }}>
-              <ScrambleText text="B.Sc. in Software Engineering @ University of Minho" duration={250} delay={180} />
+              <ScrambleText text="M.Sc. in Software Engineering @ University of Minho" duration={250} delay={180} />
             </span>
           </Center>
         </Row>
