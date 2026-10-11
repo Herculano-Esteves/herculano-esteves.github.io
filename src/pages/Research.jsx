@@ -102,6 +102,17 @@ export function DevlogMarkdown({ content }) {
 }
 
 export function DevlogModal({ item, onClose }) {
+  useEffect(() => {
+    if (!item) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [item, onClose]);
+
   if (!item) return null;
 
   return createPortal(

@@ -11,6 +11,16 @@ export const CONFIG = {
   fontSizePx: 24,       // Font size when CRT mode is active (larger to keep pixels crisp)
   fontSizeNonCrtPx: 18, // Font size when CRT mode is inactive (normal crisp text)
 
+  // Navigation Sections & Shortcuts
+  sections: [
+    { id: 'home', label: 'home', key: '1' },
+    { id: 'education', label: 'education', key: '2' },
+    { id: 'experience', label: 'experience', key: '3' },
+    { id: 'opportunities', label: 'opportunities', key: '4' },
+    { id: 'research', label: 'devlogs', key: '5' },
+    { id: 'projects', label: 'projects', key: '6' },
+  ],
+
   // Scramble Animation Settings
   scrambleChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%+-=', // Characters used to scramble
   scrambleDurationMs: 250, // Duration/speed of scramble animation in ms

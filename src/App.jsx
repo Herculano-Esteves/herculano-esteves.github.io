@@ -6,6 +6,7 @@ import { Research } from './pages/Research';
 import { Projects } from './pages/Projects';
 import { Opportunities } from './pages/Opportunities';
 import { SideNav } from './components/SideNav';
+import { KeyboardNav } from './components/KeyboardNav';
 import { AssetsGallery } from './components/AssetsGallery';
 import { CONFIG } from './config';
 import SimpleBar from 'simplebar-react';
@@ -37,6 +38,9 @@ export default function App() {
     }
     return false;
   });
+
+  // Keyboard navigation shortcuts help modal
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
   // Disable CRT styles on startup (default mode, since button is removed)
   useEffect(() => {
@@ -99,6 +103,13 @@ export default function App() {
 
       {/* Floating Side Chapter Navigation */}
       <SideNav simpleBarRef={simpleBarRef} />
+
+      {/* Global Keyboard Navigation & Help Modal */}
+      <KeyboardNav
+        simpleBarRef={simpleBarRef}
+        showHelp={showKeyboardHelp}
+        setShowHelp={setShowKeyboardHelp}
+      />
 
       {/* Secret Design System Modal Overlay - Triggered via ?assets=true URL parameter */}
       {showAssets && <AssetsGallery onClose={() => setShowAssets(false)} />}

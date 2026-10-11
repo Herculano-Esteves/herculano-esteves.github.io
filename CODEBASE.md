@@ -13,7 +13,7 @@ This repository contains the personal portfolio of **Pedro Esteves**, hosted on 
 - **Predictable Character-Cell Geometry:** The layout width is anchored to `--total-cols` (default `70ch`) using CSS monospace character units (`ch` and `em`).
 - **Data-Driven Architecture:** All displayed content (education, experience, projects, devlogs, opportunities) is strictly separated into dedicated JavaScript modules in `src/data/`.
 - **Zero-Bloat Vanilla Styling:** Custom styling is written in pure CSS (`src/index.css`), synchronized dynamically with JavaScript configuration via CSS custom properties on application startup.
-- **Micro-Interactions & Immersion:** Decryption typing animations via `ScrambleText`, synthetic mechanical click audio synthesized directly in the browser via the Web Audio API (zero audio file downloads), and optional CRT phosphor mask shaders.
+- **Micro-Interactions & Immersion:** Decryption typing animations via `ScrambleText` and optional CRT phosphor mask shaders.
 
 ---
 
@@ -42,6 +42,7 @@ This repository contains the personal portfolio of **Pedro Esteves**, hosted on 
 ├── src/
 │   ├── components/                  # Reusable UI components
 │   │   ├── AssetsGallery.jsx        # Design system & asset inspector (opened via ?assets=true)
+│   │   ├── KeyboardNav.jsx          # Global keyboard navigation & help cheat sheet modal
 │   │   ├── ProjectImageLayout.jsx   # Project media renderer (carousel, side-by-side, 3-cols)
 │   │   ├── ScrambleText.jsx         # Character decryption scramble animation
 │   │   ├── SideNav.jsx              # Floating right-aligned navigation with scroll spy
@@ -60,14 +61,13 @@ This repository contains the personal portfolio of **Pedro Esteves**, hosted on 
 │   │   ├── Opportunities.jsx        # Current career status & target locations
 │   │   ├── Projects.jsx             # Interactive project showcase list
 │   │   └── Research.jsx             # Devlogs & engineering case studies reader
-│   ├── utils/
-│   │   └── audio.js                 # Zero-byte Web Audio API mechanical switch synthesizer
 │   ├── App.jsx                      # Root container, scroll context, and section stack
 │   ├── config.js                    # Centralized layout, color, and CRT configuration
 │   ├── index.css                    # Global terminal styling, resets, and CSS variables
 │   └── main.jsx                     # Application entry point
 ├── convert_to_webp.py               # Automated CLI utility for compressing images to WebP
 ├── run.py                           # Portable Node/npm runner wrapper
+├── KEYBINDINGS.md                   # Complete reference for keyboard shortcuts & Vim controls
 ├── vite.config.js                   # Vite configuration
 └── package.json                     # Dependencies and scripts
 ```

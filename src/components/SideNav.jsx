@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react';
-
-const SECTIONS = [
-  { id: 'home', label: 'home' },
-  { id: 'education', label: 'education' },
-  { id: 'experience', label: 'experience' },
-  { id: 'opportunities', label: 'opportunities' },
-  { id: 'research', label: 'devlogs' },
-  { id: 'projects', label: 'projects' },
-];
+import { CONFIG } from '../config';
 
 export function SideNav({ simpleBarRef }) {
   const [activeSection, setActiveSection] = useState('home');
+  const sections = CONFIG.sections;
 
   useEffect(() => {
     const scrollEl = simpleBarRef.current?.getScrollElement();
@@ -19,21 +12,21 @@ export function SideNav({ simpleBarRef }) {
     const handleScroll = () => {
       const scrollPos = scrollEl.scrollTop + window.innerHeight * 0.35;
       
-      for (let i = SECTIONS.length - 1; i >= 0; i--) {
-        const el = document.getElementById(SECTIONS[i].id);
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i].id);
         if (el && el.offsetTop <= scrollPos) {
-          setActiveSection(SECTIONS[i].id);
+          setActiveSection(sections[i].id);
           return;
         }
       }
-      setActiveSection(SECTIONS[0].id);
+      setActiveSection(sections[0].id);
     };
 
     scrollEl.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
     return () => scrollEl.removeEventListener('scroll', handleScroll);
-  }, [simpleBarRef]);
+  }, [simpleBarRef, sections]);
 
   const scrollTo = (id) => {
     const target = document.getElementById(id);
@@ -49,7 +42,7 @@ export function SideNav({ simpleBarRef }) {
   return (
     <nav className="side-nav" aria-label="Page Sections Navigation">
       <div className="side-nav-list">
-        {SECTIONS.map((sec) => {
+        {sections.map((sec) => {
           const isActive = activeSection === sec.id;
           return (
             <button
