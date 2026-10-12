@@ -5,7 +5,7 @@ import { CONFIG } from '../config';
  * KeyboardNav handles global keyboard navigation:
  * - Vim navigation: 'j' (down), 'k' (up), 'g' (top), 'G' (bottom)
  * - Arrow keys: ArrowDown (down), ArrowUp (up)
- * - Number jumps: '1' through '6' for direct section jumping
+ * - Number jumps: '1' through '7' for direct section jumping
  * - Utility keys: Home (top), End (bottom), '?' (toggle popover), Esc (close)
  *
  * Renders a lightweight corner trigger button '[ ? ]' and a compact anchored popover.
@@ -126,8 +126,8 @@ export function KeyboardNav({ simpleBarRef, showHelp, setShowHelp }) {
         return;
       }
 
-      // 10. Direct numerical jump: '1' through '6'
-      if (/^[1-6]$/.test(key)) {
+      // 10. Direct numerical jump: '1' through '7'
+      if (/^[1-7]$/.test(key)) {
         const num = parseInt(key, 10);
         if (num >= 1 && num <= sections.length) {
           e.preventDefault();
@@ -201,8 +201,8 @@ export function KeyboardNav({ simpleBarRef, showHelp, setShowHelp }) {
               <span style={{ color: 'var(--dim)' }}>prev section</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>1 - 6</span>
-              <span style={{ color: 'var(--dim)' }}>jump 1..6</span>
+              <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>1 - 7</span>
+              <span style={{ color: 'var(--dim)' }}>jump 1..7</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>g / Home</span>

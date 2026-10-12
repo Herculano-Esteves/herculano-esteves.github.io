@@ -14,10 +14,11 @@ This document details the global keyboard navigation system implemented in **her
 | <kbd>G</kbd> (<kbd>Shift</kbd> + <kbd>g</kbd>) or <kbd>End</kbd> | Jump to **Bottom** (`projects`) | Global |
 | <kbd>1</kbd> | Direct jump to **Home** | Global |
 | <kbd>2</kbd> | Direct jump to **Education** | Global |
-| <kbd>3</kbd> | Direct jump to **Experience** | Global |
-| <kbd>4</kbd> | Direct jump to **Opportunities** | Global |
-| <kbd>5</kbd> | Direct jump to **Devlogs** (Active Research) | Global |
-| <kbd>6</kbd> | Direct jump to **Projects** | Global |
+| <kbd>3</kbd> | Direct jump to **Skills** | Global |
+| <kbd>4</kbd> | Direct jump to **Experience** | Global |
+| <kbd>5</kbd> | Direct jump to **Opportunities** | Global |
+| <kbd>6</kbd> | Direct jump to **Devlogs** (Active Research) | Global |
+| <kbd>7</kbd> | Direct jump to **Projects** | Global |
 | <kbd>?</kbd> (<kbd>Shift</kbd> + <kbd>/</kbd>) | Toggle **Shortcuts Cheat Sheet** overlay | Global |
 | <kbd>Esc</kbd> | Close active modal / cheat sheet / devlog | Modals & Overlays |
 
@@ -28,7 +29,7 @@ This document details the global keyboard navigation system implemented in **her
 ### Vim & Terminal Conventions
 * **`j` / `k` Navigation:** Moves sequentially between stacked sections according to the current scroll baseline (`scrollTop + 35vh`).
 * **`g` / `G` Navigation:** Lowercase `g` (or `Home`) smoothly scrolls to the very top section (`#home`). Uppercase `G` with `Shift` (or `End`) scrolls directly to the last section (`#projects`).
-* **Direct Numbers (`1`–`6`):** Instantly triggers a smooth scroll to the designated chapter without having to cycle through intermediate sections.
+* **Direct Numbers (`1`–`7`):** Instantly triggers a smooth scroll to the designated chapter without having to cycle through intermediate sections.
 
 ### Safety Guards & Input Immunity
 * **Form & Input Immunity:** Keyboard shortcuts are automatically suppressed if the user is typing into any `<input>`, `<textarea>`, or content-editable element.
@@ -56,6 +57,7 @@ Pressing <kbd>Esc</kbd>, clicking the `[x]` button, or clicking anywhere outside
     { id: 'opportunities', label: 'opportunities', key: '4' },
     { id: 'research', label: 'devlogs', key: '5' },
     { id: 'projects', label: 'projects', key: '6' },
+    { id: 'skills', label: 'skills', key: '7' },
   ]
   ```
 * **Component Implementation:** Handled by [`src/components/KeyboardNav.jsx`](./src/components/KeyboardNav.jsx).

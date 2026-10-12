@@ -19,6 +19,7 @@ export const CONFIG = {
     { id: 'opportunities', label: 'opportunities', key: '4' },
     { id: 'research', label: 'devlogs', key: '5' },
     { id: 'projects', label: 'projects', key: '6' },
+    { id: 'skills', label: 'skills', key: '7' },
   ],
 
   // Scramble Animation Settings

@@ -49,18 +49,21 @@ This repository contains the personal portfolio of **Pedro Esteves**, hosted on 
 │   │   └── TerminalGrid.jsx         # Character grid primitives (TerminalGrid, Row, Col, Center)
 │   ├── data/                        # Decoupled content datasets
 │   │   ├── devlogs.js               # In-depth engineering devlogs / active research
-│   │   ├── education.js             # Degrees, institutions, specialization profiles, languages
+│   │   ├── education.js             # Degrees, institutions, specialization profiles
 │   │   ├── experience.js            # Work experience & leadership roles
 │   │   ├── index.js                 # Central export barrel for all datasets
 │   │   ├── opportunities.js         # Availability and target roles
-│   │   └── projects.js              # Portfolio projects, tags, links, and image arrays
+│   │   ├── projects.js              # Portfolio projects, tags, links, and image arrays
+│   │   ├── skills.js                # Dynamic skill synthesizer combining projects & registry
+│   │   └── skillsRegistry.js        # Static matching & classification lookup table
 │   ├── pages/                       # Section-level page views (stacked vertically)
-│   │   ├── Education.jsx            # Education & Languages section
+│   │   ├── Education.jsx            # Academic degrees & education section
 │   │   ├── Experience.jsx           # Work Experience & Roles section
 │   │   ├── Home.jsx                 # Full-height landing view (name, socials, featured project)
 │   │   ├── Opportunities.jsx        # Current career status & target locations
 │   │   ├── Projects.jsx             # Interactive project showcase list
-│   │   └── Research.jsx             # Devlogs & engineering case studies reader
+│   │   ├── Research.jsx             # Devlogs & engineering case studies reader
+│   │   └── Skills.jsx               # Interactive technical skills & proficiencies inspector
 │   ├── App.jsx                      # Root container, scroll context, and section stack
 │   ├── config.js                    # Centralized layout, color, and CRT configuration
 │   ├── index.css                    # Global terminal styling, resets, and CSS variables
@@ -130,12 +133,13 @@ All pages are rendered as sequentially stacked sections inside `<main className=
 <section id="opportunities"><Opportunities /></section>
 <section id="research"><Research /></section>
 <section id="projects"><Projects /></section>
+<section id="skills"><Skills /></section>
 ```
 
 ### 4.5 Floating Side Navigation (`src/components/SideNav.jsx`)
 The `SideNav` component observes scrolling within the `SimpleBar` container using a vertical offset calculation (`scrollPos = scrollEl.scrollTop + window.innerHeight * 0.35`).
 
-To add or reorder items in the side menu, update the `SECTIONS` constant in `src/components/SideNav.jsx`:
+To add or reorder items in the side menu, update the `sections` configuration in `src/config.js`:
 ```javascript
 const SECTIONS = [
   { id: 'home', label: 'home' },
@@ -144,6 +148,7 @@ const SECTIONS = [
   { id: 'opportunities', label: 'opportunities' },
   { id: 'research', label: 'devlogs' },
   { id: 'projects', label: 'projects' },
+  { id: 'skills', label: 'skills' },
 ];
 ```
 

@@ -111,6 +111,8 @@ function ProjectCard({ project, index, isLast }) {
 }
 
 export function Projects() {
+  const visibleProjects = PROJECTS_DATA.filter((project) => !project.hidden);
+
   return (
     <div className="page-wrapper" style={{ width: 'calc(var(--total-cols) * 1ch)', margin: '4rem auto 0 auto' }}>
       
@@ -123,12 +125,12 @@ export function Projects() {
 
       {/* Projects List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', width: '100%' }}>
-        {PROJECTS_DATA.map((project, index) => (
+        {visibleProjects.map((project, index) => (
           <ProjectCard 
             key={index} 
             project={project} 
             index={index} 
-            isLast={index === PROJECTS_DATA.length - 1} 
+            isLast={index === visibleProjects.length - 1} 
           />
         ))}
       </div>
