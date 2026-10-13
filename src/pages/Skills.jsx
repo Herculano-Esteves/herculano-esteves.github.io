@@ -44,7 +44,7 @@ export function Skills() {
               </div>
 
               {/* Skills List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%' }}>
                 {catSkills.map((skill) => {
                   const hasDetails = Boolean(skill.detail || skill.context || (skill.bundledItems && skill.bundledItems.length > 0));
                   const isExpanded = hasDetails && expandedIds.has(skill.id);
@@ -59,7 +59,7 @@ export function Skills() {
                             background: 'none',
                             border: 'none',
                             outline: 'none',
-                            padding: '0.2rem 0',
+                            padding: '0.35rem 0',
                             width: '100%',
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -120,7 +120,7 @@ export function Skills() {
                       ) : (
                         <div
                           style={{
-                            padding: '0.2rem 0',
+                            padding: '0.35rem 0',
                             width: '100%',
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -160,48 +160,29 @@ export function Skills() {
 
                       {/* Expandable Technical Detail */}
                       {hasDetails && isExpanded && (
-                        <div style={{ paddingLeft: '2.5ch', paddingTop: '0.35rem', paddingBottom: '0.5rem' }}>
+                        <div className="skill-detail-container">
                           {skill.context && (
-                            <div style={{ fontSize: '0.9em', color: 'var(--dim)', marginBottom: '0.25rem' }}>
-                              <span style={{ color: 'var(--muted)' }}>Application: </span>
+                            <div className="skill-detail-line">
+                              <span style={{ color: 'var(--primary)' }}>Application: </span>
                               <span style={{ color: 'var(--secondary)' }}>{skill.context}</span>
                             </div>
                           )}
-                          {skill.detail && (
-                            <p className="project-desc" style={{ margin: 0, color: 'var(--dim)', fontSize: '0.92em' }}>
-                              {skill.detail}
-                            </p>
-                          )}
                           {skill.bundledItems && skill.bundledItems.length > 0 && (
-                            <div
-                              style={{
-                                marginTop: '0.6rem',
-                                padding: '0.45rem 0.75rem',
-                                border: '1px solid var(--border)',
-                                background: 'rgba(255, 255, 255, 0.02)',
-                                lineHeight: '1.4',
-                                whiteSpace: 'normal',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  color: 'var(--primary)',
-                                  fontSize: '0.8em',
-                                  fontWeight: 'bold',
-                                  marginBottom: '0.35rem',
-                                  letterSpacing: '0.05em',
-                                }}
-                              >
-                                STACK / COMPONENTS:
-                              </div>
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8ch' }}>
+                            <div className="skill-detail-line">
+                              <span style={{ color: 'var(--primary)' }}>Stack: </span>
+                              <span style={{ color: 'var(--secondary)' }}>
                                 {skill.bundledItems.map((item, bIdx) => (
-                                  <span key={bIdx} style={{ color: 'var(--secondary)', fontSize: '0.85em' }}>
+                                  <span key={bIdx} style={{ marginRight: '0.8ch' }}>
                                     [{item}]
                                   </span>
                                 ))}
-                              </div>
+                              </span>
                             </div>
+                          )}
+                          {skill.detail && (
+                            <p className="skill-detail-desc">
+                              {skill.detail}
+                            </p>
                           )}
                         </div>
                       )}
